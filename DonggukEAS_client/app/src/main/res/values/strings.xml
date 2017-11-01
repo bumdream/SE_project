@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">DonggukEAS_client</string>
+    <string name="register">휴대폰 등록요청</string>
+    <string name="id_hint">학번을 적어주세요</string>
+    <string name="not_register">등록된 기기가 아닙니다.</string>
+    <string name="attendance">출석QR생성</string>
+</resources>

@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">DonggukEAS_admin</string>
+    <string name="accept">승인</string>
+    <string name="register_db_table">reserve_clients</string>
+    <string name="reserve_list">기기승인요청</string>
+    <string name="decode">QR코드를 비춰주세요</string>
+</resources>
