@@ -12,51 +12,55 @@ import android.widget.Button;
 import android.widget.TextView;
 import java.util.ArrayList;
 
+import dgu.donggukeas_client.R;
+import dgu.donggukeas_client.model.Subject;
+
 
 /**
  * Created by hansb on 2017-09-06.
  */
 
-public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.RegisterViewHolder> {
+
+public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectViewHolder> {
+
     private Context mContext;
-    private ArrayList<WaitingClient> waitingClients;
-    public SubjectAdapter(Context context, ArrayList<WaitingClient> result){
+    private ArrayList<Subject> subjects;
+    public SubjectAdapter(Context context, ArrayList<Subject> result){
         mContext = context;
-        waitingClients = result;
+        subjects = result;
     }
 
     @Override
-    public RegisterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.row_register,parent,false);
-        return new RegisterViewHolder(view);
+    public SubjectViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(mContext).inflate(R.layout.item_subject,parent,false);
+        return new SubjectViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(RegisterViewHolder holder, int position) {
-        WaitingClient wc = waitingClients.get(position);
-        holder.studentId.setText(wc.getStudentId());
-        holder.phoneId.setText(wc.getPhoneId());
+    public void onBindViewHolder(SubjectViewHolder holder, int position) {
+        Subject subject = subjects.get(position);
+        holder.subjectName.setText(subject.getSubjectName());
+        holder.subjectCode.setText(subject.getSubjectCode());
     }
 
     @Override
     public int getItemCount() {
-        return waitingClients.size();
+        return subjects.size();
     }
 
     public void swapData(){
 
     }
 
-    public class RegisterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView studentId;
-        TextView phoneId;
-        Button btnRegister;
+    public class SubjectViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        TextView subjectCode;
+        TextView subjectName;
 
-        public RegisterViewHolder(View itemView){
+
+        public SubjectViewHolder(View itemView){
             super(itemView);
-            studentId = (TextView)itemView.findViewById(R.id.tv_student_id);
-            phoneId = (TextView)itemView.findViewById(R.id.tv_phone_id);
-            btnRegister = (Button)itemView.findViewById(R.id.btn_register);
+            subjectCode = (TextView)itemView.findViewById(R.id.tv_subject_code);
+            subjectName = (TextView)itemView.findViewById(R.id.tv_subject_name);
         }
 
         @Override

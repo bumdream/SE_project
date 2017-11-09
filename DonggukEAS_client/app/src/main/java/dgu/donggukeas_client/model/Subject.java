@@ -7,8 +7,21 @@ import java.util.List;
  */
 
 public class Subject {
-    String subjectName;
     String subjectCode;
-    List<String> Student;
-    long startTime;
+    String subjectName;
+    public String getSubjectName() {
+        return subjectName;
+    }
+
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
+    }
+
+    public String getSubjectCode() {
+        return subjectCode;
+    }
+
+    public void setSubjectCode(String subjectCode) {
+        this.subjectCode = subjectCode;
+    }
 }

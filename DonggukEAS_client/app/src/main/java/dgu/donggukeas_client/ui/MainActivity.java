@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,16 +28,23 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import dgu.donggukeas_client.R;
+import dgu.donggukeas_client.adapter.SubjectAdapter;
 import dgu.donggukeas_client.model.Student;
+import dgu.donggukeas_client.model.Subject;
 import dgu.donggukeas_client.model.WaitingClient;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private String mStudentId;
+    private RecyclerView mRecyclerView;
+    private SubjectAdapter mSubjectAdapter;
+    private ArrayList<Subject> result;
+
     private Button mRegisterBtn,mCreateQRBtn;
     private TextView mDeviceId;
     private ImageView mQrView;
@@ -49,67 +59,68 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mDatabaseClients = FirebaseDatabase.getInstance().getReference(getString(R.string.table_student_classes));
+        mRecyclerView = (RecyclerView)findViewById(R.id.rv_subject);
+        result = new ArrayList<>();
+
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        mSubjectAdapter = new SubjectAdapter(this,result);
+        mRecyclerView.setAdapter(mSubjectAdapter);
+        
         mStudentId = getIntent().getStringExtra(getString(R.string.extra_id));
-        if(mStudentId!=null) {
-            mDatabaseClients.child(mStudentId).addListenerForSingleValueEvent(
-                    new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            // Get user value
-                            Student stu = dataSnapshot.getValue(Student.class);
-                            if (stu != null) {
-
-                            }
-                        }
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            Log.w("#####", "getUser:onCancelled", databaseError.toException());
-                        }
-                    });
-        }
-       /* mRegisterBtn = (Button)findViewById(R.id.btn_register);
-        mDeviceId = (TextView)findViewById(R.id.tv_device_id);
-        mQrView = (ImageView) findViewById(R.id.iv_qr);
-        mCreateQRBtn = (Button)findViewById(R.id.btn_create_qr);
-        mRegisterBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                registerId();
-            }
-        });
-        mCreateQRBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String studentId = mStudentId.getText().toString();
-                if(!TextUtils.isEmpty(studentId)){
-                    try {
-                        Calendar cal = java.util.Calendar.getInstance();
-                        Bitmap bitmap = encodeAsBitmap(studentId+" "+getDateFromMilli(cal.getTimeInMillis()));
-                        mQrView.setImageBitmap(bitmap);
-                    } catch (WriterException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-            }
-        });*/
+        mDatabaseClients = FirebaseDatabase.getInstance().getReference(getString(R.string.table_student_classes)).child(mStudentId);
+        updateList();
 
 
     }
 
-/*    private void registerId(){
-      //  String studentId = mStudentId.getText().toString();
+    private void updateList(){
+        mDatabaseClients.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                result.add(dataSnapshot.getValue(Subject.class));
+                mSubjectAdapter.notifyDataSetChanged();
+            }
 
-        if(!TextUtils.isEmpty(studentId)){
-            String deviceId = FirebaseInstanceId.getInstance().getToken();
-            WaitingClient client = new WaitingClient(studentId,deviceId);
-            mDatabaseClients.child(studentId).setValue(client);
-            Toast.makeText(this,"device added",Toast.LENGTH_SHORT).show();
-        }else{
-            Toast.makeText(this,"empty name",Toast.LENGTH_SHORT).show();
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Subject subject = dataSnapshot.getValue(Subject.class);
+                int index = getItemIndex(subject);
+                result.set(index,subject);
+                mSubjectAdapter.notifyItemChanged(index);
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Subject subject = dataSnapshot.getValue(Subject.class);
+                int index = getItemIndex(subject);
+                result.remove(index);
+                mSubjectAdapter.notifyItemRemoved(index);
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private int getItemIndex(Subject subject){
+        int index = -1;
+        for(int i=0;i<result.size();i++){
+            if(result.get(i).getSubjectCode().equals(subject.getSubjectCode())) {
+                index = i;
+                break;
+            }
         }
-    }*/
+        return index;
+    }
 
     Bitmap encodeAsBitmap(String str) throws WriterException {
         BitMatrix result;

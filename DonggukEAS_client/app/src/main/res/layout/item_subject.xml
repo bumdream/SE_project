@@ -14,6 +14,7 @@
         android:layout_height="match_parent"
         android:padding="10dp">
         <TextView
+            android:id="@+id/tv_subject_code"
             android:text="[CSE-1111]"
             android:textColor="@color/Grey700"
             android:layout_width="wrap_content"
@@ -27,7 +28,7 @@
             android:text="subjectName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView" />
+            android:id="@+id/tv_subject_name" />
     </LinearLayout>
 
     <LinearLayout
