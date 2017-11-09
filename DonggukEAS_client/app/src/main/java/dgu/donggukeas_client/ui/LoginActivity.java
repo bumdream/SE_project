@@ -30,7 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+//abc
         mIdEt = (EditText) findViewById(R.id.et_id);
         mPwEt = (EditText) findViewById(R.id.et_pw);
         mloginBtn = (Button) findViewById(R.id.btn_login);
