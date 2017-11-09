@@ -9,4 +9,9 @@
     <string name="success_login">로그인 성공</string>
     <string name="failed_login_pw">비밀번호가 틀렸습니다</string>
     <string name="failed_login_id">존재하지 않는 학번입니다</string>
+    <string name="table_student_auth">STUDENT_AUTH</string>
+    <string name="title_classes">수강과목</string>
+    <string name="extra_id">EXTRA_ID</string>
+    <string name="table_student">STUDENT</string>
+    <string name="table_student_classes">STUDENT_CLASSES</string>
 </resources>

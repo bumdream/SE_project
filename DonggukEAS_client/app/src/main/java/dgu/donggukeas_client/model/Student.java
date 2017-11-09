@@ -8,6 +8,7 @@ public class Student {
     private String studentId;
     private String deviceToken;
     private String[] classes;
+    private String wifiInfo;
 
     public Student(String studentId, String deviceToken){
         this.studentId = studentId;
@@ -40,6 +41,10 @@ public class Student {
         this.classes = classes;
     }
 
+    public String getWifiInfo(){
+        return wifiInfo;
+    }
 
+    public void setWifiInfo(String wifiInfo){ this.wifiInfo = wifiInfo;}
 
 }

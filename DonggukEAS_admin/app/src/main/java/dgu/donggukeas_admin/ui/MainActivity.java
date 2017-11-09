@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity  implements QRCodeReaderView
         setContentView(R.layout.activity_main);
         mDecode = (TextView)findViewById(R.id.tv_decode);
         mDatabase = FirebaseDatabase.getInstance();
-        mReference = mDatabase.getReference(getString(R.string.register_db_table));
+        mReference = mDatabase.getReference(getString(R.string.table_phone_register));
 
         result = new ArrayList<>();
         mRegisterRecyclerView = (RecyclerView)findViewById(R.id.rv_register);
