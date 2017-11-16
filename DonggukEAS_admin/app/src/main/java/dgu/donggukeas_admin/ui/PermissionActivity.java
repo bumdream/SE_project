@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.gun0912.tedpermission.PermissionListener;
@@ -21,12 +22,15 @@ public class PermissionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_permission);
 
-        if(AppPermissions.hasPhotoPermissionsGranted(this)){
+        if(AppPermissions.hasAppPermission(this)){
             Intent i = new Intent(PermissionActivity.this, MainActivity.class);
             startActivity(i);
             finish();
+
+            Log.e("#####","here!!!!11111");
         }
         else{
+            Log.e("#####","here!!!!");
             setUpTedPermission();
         }
 
@@ -53,7 +57,7 @@ public class PermissionActivity extends AppCompatActivity {
         TedPermission.with(this)
                 .setPermissionListener(permissionlistener)
                 .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
-                .setPermissions(Manifest.permission.CAMERA)
+                .setPermissions(AppPermissions.APP_PERMISSION)
                 .check();
     }
 }

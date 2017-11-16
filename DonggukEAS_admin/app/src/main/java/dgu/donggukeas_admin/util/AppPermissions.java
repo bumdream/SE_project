@@ -7,9 +7,7 @@ package dgu.donggukeas_admin.util;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 
 
 /**
@@ -17,12 +15,16 @@ import android.util.Log;
  */
 
 public class AppPermissions {
-    public static final String[] PHOTO_PERMISSIONS = {
-            Manifest.permission.CAMERA
+    public static final String[] APP_PERMISSION = {
+            Manifest.permission.CAMERA,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_WIFI_STATE,
+            Manifest.permission.ACCESS_NETWORK_STATE,
+            Manifest.permission.CHANGE_WIFI_STATE
     };
 
-    public static boolean hasPhotoPermissionsGranted(Context context) {
-        for (String permission : PHOTO_PERMISSIONS) {
+    public static boolean hasAppPermission(Context context) {
+        for (String permission : APP_PERMISSION) {
             if (ActivityCompat.checkSelfPermission(context, permission)
                     != PackageManager.PERMISSION_GRANTED) {
                 return false;
@@ -30,7 +32,6 @@ public class AppPermissions {
         }
         return true;
     }
-
 
 
 }

@@ -14,9 +14,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import dgu.donggukeas_client.R;
 import dgu.donggukeas_client.model.Auth;
+import dgu.donggukeas_client.model.Subject;
+import dgu.donggukeas_client.model.WaitingClient;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -34,8 +37,28 @@ public class LoginActivity extends AppCompatActivity {
         mIdEt = (EditText) findViewById(R.id.et_id);
         mPwEt = (EditText) findViewById(R.id.et_pw);
         mloginBtn = (Button) findViewById(R.id.btn_login);
+        Log.d("#####",FirebaseInstanceId.getInstance().getToken());
+
+
+/*
+        //임시 코드 .. 수강과목 넣는코드
+        mDatabaseClients = FirebaseDatabase.getInstance().getReference(getString(R.string.table_student_classes)).child("2011112162");
+        mloginBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Subject sub = new Subject();
+                sub.setSubjectName(mIdEt.getText().toString());
+                sub.setSubjectCode(mPwEt.getText().toString());
+                mDatabaseClients.child(sub.getSubjectCode()).setValue(sub);
+            }
+        });
+*/
+
+
 
         mDatabaseClients = FirebaseDatabase.getInstance().getReference(getString(R.string.table_student_auth));
+
         mloginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

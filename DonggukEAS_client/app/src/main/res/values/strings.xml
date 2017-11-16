@@ -14,4 +14,6 @@
     <string name="extra_id">EXTRA_ID</string>
     <string name="table_student">STUDENT</string>
     <string name="table_student_classes">STUDENT_CLASSES</string>
+    <string name="info_gps">위치 정보를 조회 중입니다</string>
+    <string name="info_gps_2">잠시만 기다려주세요</string>
 </resources>

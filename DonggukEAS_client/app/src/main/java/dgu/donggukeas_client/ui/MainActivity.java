@@ -67,10 +67,11 @@ public class MainActivity extends AppCompatActivity {
 
         mSubjectAdapter = new SubjectAdapter(this,result);
         mRecyclerView.setAdapter(mSubjectAdapter);
-        
+
         mStudentId = getIntent().getStringExtra(getString(R.string.extra_id));
         mDatabaseClients = FirebaseDatabase.getInstance().getReference(getString(R.string.table_student_classes)).child(mStudentId);
         updateList();
+
 
 
     }

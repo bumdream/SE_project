@@ -1,7 +1,14 @@
 <resources>
-    <string name="app_name">DonggukEAS_admin</string>
+ <string name="app_name">DonggukEAS_admin</string>
     <string name="accept">승인</string>
-    <string name="table_phone_register">reserve_clients</string>
     <string name="reserve_list">기기승인요청</string>
     <string name="decode">QR코드를 비춰주세요</string>
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+   <string name="table_subject">SUBJECT</string>
+    <string name="student_list">학생리스트</string>
+    <string name="table_student">STUDENT</string>
+    <string name="table_device">STUDENT_DEVICE</string>
+    <string name="table_attendance">STUDENT_ATTENDANCE</string>
+    <string name="table_wifi">STUDENT_WIFI</string>
+
 </resources>
