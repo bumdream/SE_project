@@ -103,6 +103,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "539626645760-pu4ud9ocj0435se6utaiv4fndm8bv3jc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "dgu.donggukeas_admin",
+            "certificate_hash": "bbab1041e44e6a4e04d6e91b62b493ce2afe5340"
+          }
+        },
+        {
           "client_id": "539626645760-nccmelq8ugb9ksvk4t6aaoqpatbi43de.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

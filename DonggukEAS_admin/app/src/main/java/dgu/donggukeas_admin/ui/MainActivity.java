@@ -13,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
 import com.google.firebase.database.ChildEventListener;
@@ -27,6 +28,7 @@ import java.util.List;
 
 import dgu.donggukeas_admin.R;
 import dgu.donggukeas_admin.adapter.AttendanceAdapter;
+import dgu.donggukeas_admin.firebase.AndroidPush;
 import dgu.donggukeas_admin.model.StudentInfo;
 import dgu.donggukeas_admin.model.firebase.AttendanceStatus;
 import dgu.donggukeas_admin.model.firebase.Student;
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
     private AttendanceAdapter mAdapter;
     private FirebaseDatabase mDatabase;
     private DatabaseReference mReference;
-    private DatabaseReference mStudentReference,mDeviceReference,mAttendanceReference,mWifiReference;
+    private DatabaseReference mStudentReference, mDeviceReference, mAttendanceReference, mWifiReference;
     private QRCodeReaderView qrCodeReaderView;
     private PointsOverlayView pointsOverlayView;
     private TextView mDecode;
@@ -50,7 +52,9 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
     private ArrayList<StudentInfo> mStudents;
     private WifiManager mWifiManager;
     private List<ScanResult> mWifiResults;
-
+    private int mWeeks;
+    private String mLastCheckedStudent;
+    private Toast mToast;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,21 +75,23 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
         mAdapter = new AttendanceAdapter(this, mStudents);
         mRegisterRecyclerView.setAdapter(mAdapter);
 
-        mWifiManager =  (WifiManager) getSystemService(WIFI_SERVICE);
+        mWifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+
+        mLastCheckedStudent = "";
 
         //updateList();
-        initReader("CSE4058-02",1);
+        initReader("CSE4058-02", 1);
         //test_addSubject();
         scanWifi();
 
-      qrCodeReaderView = (QRCodeReaderView) findViewById(R.id.qrdecoderview);
+        qrCodeReaderView = (QRCodeReaderView) findViewById(R.id.qrdecoderview);
         qrCodeReaderView.setOnQRCodeReadListener(this);
 
         // Use this function to enable/disable decoding
         qrCodeReaderView.setQRDecodingEnabled(true);
 
         // Use this function to change the autofocus interval (default is 5 secs)
-        qrCodeReaderView.setAutofocusInterval(2000L);
+        qrCodeReaderView.setAutofocusInterval(9000L);
 
         // Use this function to enable/disable Torch
         qrCodeReaderView.setTorchEnabled(true);
@@ -99,13 +105,13 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
     }
 
     public void scanWifi() {
-        if(mWifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
+        if (mWifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
 
             // register WiFi scan results receiver
             IntentFilter filter = new IntentFilter();
             filter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
 
-            registerReceiver(new BroadcastReceiver(){
+            registerReceiver(new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
 
@@ -113,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
                     final int N = mWifiResults.size();
 
                     Log.v("#####", "Wi-Fi Scan Results ... Count:" + N);
-                    for(int i=0; i < N; ++i) {
+                    for (int i = 0; i < N; ++i) {
                         Log.v("#####", "  BSSID       =" + mWifiResults.get(i).BSSID);
                         Log.v("#####", "  SSID        =" + mWifiResults.get(i).SSID);
                         Log.v("#####", "  Capabilities=" + mWifiResults.get(i).capabilities);
@@ -122,35 +128,33 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
                         Log.v("#####", "---------------");
                     }
                 }
+
+
             }, filter);
 
             // start WiFi Scan
             mWifiManager.startScan();
         }
+        else{
+            mWifiManager.setWifiEnabled(true);
+            scanWifi();
+        }
     }
 
-    @Override
-    public void onQRCodeRead(String text, PointF[] points) {
-        mDecode.setText(text);
-        pointsOverlayView.setPoints(points);
+    public boolean isExistWifi(String BSSID) {
+        for (int i = 0; i < mWifiResults.size(); ++i) {
+            if (BSSID.equals(mWifiResults.get(i).BSSID)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //qrCodeReaderView.startCamera();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        //qrCodeReaderView.stopCamera();
-    }
 
     //교수가 QR코드를 찍으면 리더기를 초기화 하고 학생들의 정보를 불러옴
-    public void initReader(final String subjectCode,final int week){
+    public void initReader(final String subjectCode, final int week) {
         DatabaseReference reference = mDatabase.getReference(getString(R.string.table_subject));
+        mWeeks = week;
         mAttendanceReference = mAttendanceReference.child(subjectCode).child(String.valueOf(week));
         //해당 과목 subjectCode 로 mSubject(전연변수) 동기화
 
@@ -160,14 +164,14 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
                         mSubject = dataSnapshot.getValue(Subject.class);
-                        setTitle(mSubject.getSubjectName()+"["+mSubject.getSubjectCode()+"] - "+week+"주차");
-                        Log.d("#####",mSubject.getSubjectCode()+mSubject.getSubjectName());
+                        setTitle(mSubject.getSubjectName() + "[" + mSubject.getSubjectCode() + "] - " + week + "주차");
+                        Log.d("#####", mSubject.getSubjectCode() + mSubject.getSubjectName());
 
 
                         //현재 subjectCode 에 해당하는 학생 mStudents(전역변수) 리스트에 추가
-                        List<String> studentsId = mSubject.getListenStudent();
+                        final List<String> studentsId = mSubject.getListenStudent();
 
-                        for(int i=0;i<studentsId.size();i++) {
+                        for (int i = 0; i < studentsId.size(); i++) {
                             mStudents.add(new dgu.donggukeas_admin.model.StudentInfo(studentsId.get(i)));
 
                         }
@@ -181,18 +185,15 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
                             public void onDataChange(DataSnapshot snapshot) {
                                 for (DataSnapshot child : snapshot.getChildren()) {
                                     Student student = child.getValue(Student.class);
-                                    int changedIndex = -1;
-                                    for(int i=0;i<mStudents.size();i++){
-                                        if(mStudents.get(i).getStudentId().equals(student.getStudentId())){
-                                            mStudents.get(i).setStudentName(student.getStudentName());
-                                            changedIndex = i;
-                                            break;
-                                        }
+                                    int index = getStudentIndex(student.getStudentId());
+                                    if (index != Constants.studentNotFound) {
+                                        mStudents.get(index).setStudentName(student.getStudentName());
+                                        mAdapter.notifyItemChanged(index);
                                     }
-                                    if(changedIndex!=-1)
-                                    mAdapter.notifyItemChanged(changedIndex);
+
                                 }
                             }
+
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
 
@@ -203,11 +204,12 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
                             @Override
                             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                                 StudentDevice studentDevice = dataSnapshot.getValue(StudentDevice.class);
+                                Log.d("#####",studentDevice.getStudentId()+"/"+studentDevice.getDeviceToken());
+                                int index = getStudentIndex(studentDevice.getStudentId());
 
-                                int index = getStudentIndex(studentDevice.getDeviceToken());
-
-                                if(index!=-1) {
+                                if (index != Constants.studentNotFound) {
                                     mStudents.get(index).setDeviceToken(studentDevice.getDeviceToken());
+                                    Log.d("#####",mStudents.get(index).getDeviceToken());
                                     mAdapter.notifyItemChanged(index);
                                 }
                             }
@@ -218,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
                             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                                 StudentDevice studentDevice = dataSnapshot.getValue(StudentDevice.class);
                                 int index = getStudentIndex(studentDevice.getStudentId());
-                                if(index != -1) {
+                                if (index != Constants.studentNotFound) {
                                     mStudents.get(index).setDeviceToken(studentDevice.getDeviceToken());
                                     mAdapter.notifyItemChanged(index);
                                 }
@@ -244,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
                             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                                 AttendanceStatus as = dataSnapshot.getValue(AttendanceStatus.class);
                                 int index = getStudentIndex(as.getStudentId());
-                                if(index!=-1){
+                                if (index != Constants.studentNotFound) {
                                     mStudents.get(index).setAttendanceStatus(as.getAttendanceStatus());
                                     mAdapter.notifyItemChanged(index);
                                 }
@@ -255,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
                             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                                 AttendanceStatus as = dataSnapshot.getValue(AttendanceStatus.class);
                                 int index = getStudentIndex(as.getStudentId());
-                                if(index!=-1){
+                                if (index != Constants.studentNotFound) {
                                     mStudents.get(index).setAttendanceStatus(as.getAttendanceStatus());
                                     mAdapter.notifyItemChanged(index);
                                 }
@@ -290,18 +292,17 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
                 //StudentWifi studentWifi = dataSnapshot.getValue(StudentWifi.class);
             }
 
-
-            //TODO 이제 wifi 로 출석하는거 했으니, 리더기에서 학생 QR 찍으면 푸쉬보내는거 하기
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 StudentWifi studentWifi = dataSnapshot.getValue(StudentWifi.class);
                 int index = getStudentIndex(studentWifi.getStudentId());
-                if(index != -1){
+                if (index != Constants.studentNotFound) {
                     //해당 학생 wifi를 리더기 wifi 와 비교
-                    if(isExistWifi(studentWifi.getWifiInfo())){
+                    if (isExistWifi(studentWifi.getWifiInfo())) {
+                        Log.d("#####","동일");
                         mAttendanceReference.child(studentWifi.getStudentId()).setValue(new AttendanceStatus(studentWifi.getStudentId(), Constants.ATTENDANCE_OK));
-                    }
-                    else{
+                    } else {
+                        Log.d("#####","없음");
                         mAttendanceReference.child(studentWifi.getStudentId()).setValue(new AttendanceStatus(studentWifi.getStudentId(), Constants.ATTENDANCE_ABSENCE));
                     }
                 }
@@ -324,12 +325,35 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
         });
 
 
-
-
     }
 
-    public int getStudentIndex(String studentId){
-        int index = -1;
+    //학생이 QR코드를 찍으면 해당학생에게 wifi 정보를 요청하는 push를 보낸다.
+    //여기선 push만 보내고 reference 에서 체크
+    public void requestWifiIfo(String studentId) {
+
+        int index = getStudentIndex(studentId);
+        if (index == Constants.studentNotFound) {
+            showToast(getString(R.string.info_not_this_student_class));
+            return;
+        }
+
+        StudentInfo studentInfo = mStudents.get(index);
+
+
+        String deviceToken = studentInfo.getDeviceToken();
+
+        if (deviceToken.equals(Constants.deviceNotRegisterd)) {
+            showToast(getString(R.string.info_not_register_device));
+            return;
+        }
+
+
+        AndroidPush.sendPushNotification(mSubject.getSubjectCode(),mWeeks,mSubject.getSubjectName() ,studentInfo.getStudentId(),deviceToken);
+        showToast(getString(R.string.info_sending_push));
+    }
+
+    public int getStudentIndex(String studentId) {
+        int index = Constants.studentNotFound;
         for (int i = 0; i < mStudents.size(); i++) {
             if (mStudents.get(i).getStudentId().equals(studentId)) {
                 index = i;
@@ -339,12 +363,40 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
         return index;
     }
 
-    public boolean isExistWifi(String BSSID){
-        for(int i = 0; i < mWifiResults.size(); ++i) {
-            if(BSSID.equals(mWifiResults.get(i).BSSID)){
-                return true;
-            }
-        }
-        return false;
+    @Override
+    public void onQRCodeRead(String text, PointF[] points) {
+        if(mLastCheckedStudent.equals(text))
+            return;
+
+        int index = getStudentIndex(text);
+        if(index==Constants.studentNotFound)
+            return;
+
+        mLastCheckedStudent = text;
+        requestWifiIfo(text);
+
+
+        pointsOverlayView.setPoints(points);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //qrCodeReaderView.startCamera();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //qrCodeReaderView.stopCamera();
+    }
+
+    public void showToast(String str){
+        if(mToast!=null)
+            mToast.cancel();
+
+        mToast = Toast.makeText(this,str,Toast.LENGTH_SHORT);
+        mToast.show();
     }
 }

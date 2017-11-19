@@ -1,0 +1,13 @@
+package dgu.donggukeas_client.util;
+
+/**
+ * Created by hanseungbeom on 2017. 11. 19..
+ */
+
+public class Constants {
+    public static final int ATTENDANCE_NONE = 0; //미처리
+    public static final int ATTENDANCE_OK = 1;  //출석
+    public static final int ATTENDANCE_ABSENCE = 2;  //결석
+    public static final int ATTENDANCE_LATE =3;
+    public static final int ATTENDANCE_RUN = 4; //출튀
+}

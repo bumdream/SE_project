@@ -11,9 +11,15 @@
     <string name="failed_login_id">존재하지 않는 학번입니다</string>
     <string name="table_student_auth">STUDENT_AUTH</string>
     <string name="title_classes">수강과목</string>
+    <string name="table_attendance">STUDENT_ATTENDANCE</string>
+    <string name="table_wifi">STUDENT_WIFI</string>
     <string name="extra_id">EXTRA_ID</string>
     <string name="table_student">STUDENT</string>
     <string name="table_student_classes">STUDENT_CLASSES</string>
     <string name="info_gps">위치 정보를 조회 중입니다</string>
     <string name="info_gps_2">잠시만 기다려주세요</string>
+    <string name="info_noti">출석 처리를 위한 위치정보 요청입니다</string>
+    <string name="info_no_wifi">wifi를 사용할 수 없습니다</string>
+    <string name="info_attendance_ok">출석처리가 완료되었습니다</string>
+    <string name="info_attendance_no">결석처리 되었습니다.</string>
 </resources>

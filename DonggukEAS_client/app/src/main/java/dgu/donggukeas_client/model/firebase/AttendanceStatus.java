@@ -1,4 +1,4 @@
-package dgu.donggukeas_admin.model.firebase;
+package dgu.donggukeas_client.model.firebase;
 
 /**
  * Created by hanseungbeom on 2017. 11. 14..
@@ -12,7 +12,7 @@ public class AttendanceStatus {
     public AttendanceStatus(){
 
     }
-    public AttendanceStatus(String studentId,int attendanceStatus){
+    public AttendanceStatus(String studentId, int attendanceStatus){
         this.studentId = studentId;
         this.attendanceStatus = attendanceStatus;
     }

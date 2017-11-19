@@ -13,15 +13,20 @@ public class AndroidPush {
     /**
      * Sends notification to mobile, YOU DON'T NEED TO UNDERSTAND THIS METHOD
      */
-    public static void sendPushNotification(final String title, final String message,final String deviceToken) {
+    public static void sendPushNotification(final String subjectCode, final int week,final String subjectName,final String studentId,final String deviceToken) {
         new Thread(new Runnable() {
             @Override public void run() { //
                 try {
                     //Thread.sleep(5000);
-                    String pushMessage = "{\"data\":{\"title\":\"" +
-                            title +
-                            "\",\"message\":\"" +
-                            message +
+                    String pushMessage = "{\"data\":{\"" +
+                            "subjectCode\":\"" +
+                            subjectCode +
+                            "\",\"week\":\"" +
+                            String.valueOf(week) +
+                            "\",\"subjectName\":\"" +
+                            subjectName +
+                            "\",\"studentId\":\"" +
+                            studentId+
                             "\"},\"to\":\"" +
                             deviceToken +
                             "\"}";

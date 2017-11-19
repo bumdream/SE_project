@@ -10,5 +10,9 @@
     <string name="table_device">STUDENT_DEVICE</string>
     <string name="table_attendance">STUDENT_ATTENDANCE</string>
     <string name="table_wifi">STUDENT_WIFI</string>
+    <string name="info_not_this_student_class">이 수업을 듣는 학생이 아닙니다.</string>
+    <string name="info_not_register_device">등록되지 않은 기기입니다.</string>
+    <string name="push_title">title</string>
+    <string name="info_sending_push">학생의 기기로 위치정보 요청을 보냈습니다</string>
 
 </resources>

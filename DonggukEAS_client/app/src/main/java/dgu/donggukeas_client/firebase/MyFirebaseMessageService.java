@@ -15,7 +15,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import java.util.List;
-
+import java.util.Map;
 
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -38,32 +38,31 @@ public class MyFirebaseMessageService extends FirebaseMessagingService{
     // [START receive_message]
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        // [START_EXCLUDE]
-        // There are two types of messages data messages and notification messages. Data messages are handled
-        // here in onMessageReceived whether the app is in the foreground or background. Data messages are the type
-        // traditionally used with GCM. Notification messages are only received here in onMessageReceived when the app
-        // is in the foreground. When the app is in the background an automatically generated notification is displayed.
-        // When the user taps on the notification they are returned to the app. Messages containing both notification
-        // and data payloads are treated as notification messages. The Firebase console always sends notification
-        // messages. For more see: https://firebase.google.com/docs/cloud-messaging/concept-options
-        // [END_EXCLUDE]
 
         // TODO(developer): Handle FCM messages here.
-        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+            /*Log.d(TAG, "Message data payload: " + remoteMessage.getData().get("studentId"));
+            Log.d(TAG, "Message data payload: " + remoteMessage.getData().get("subjectCode"));
+            Log.d(TAG, "Message data payload: " + remoteMessage.getData().get("week"));*/
             handleNow();
-            if(isRunningInForeground()){
-                Intent dialogIntent = new Intent(this, SendWifiActivity.class);
-                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(dialogIntent);
-            }
-            else{
-                sendNotification(remoteMessage.getData().toString());
 
+            //앱이 현재 실행중이면
+            if(isRunningInForeground()){
+                Intent intent = new Intent(this, SendWifiActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("studentId",remoteMessage.getData().get("studentId"));
+                intent.putExtra("subjectCode",remoteMessage.getData().get("subjectCode"));
+                intent.putExtra("week",Integer.parseInt(remoteMessage.getData().get("week")));
+                intent.putExtra("subjectName",remoteMessage.getData().get("subjectName"));
+                startActivity(intent);
+            }
+
+            //앱이 실행중이 아니면
+            else{
+                sendNotification(remoteMessage.getData());
             }
         }
 
@@ -98,21 +97,26 @@ public class MyFirebaseMessageService extends FirebaseMessagingService{
     /**
      * Create and show a simple notification containing the received FCM message.
      *
-     * @param messageBody FCM message body received.
+     *
      */
-    private void sendNotification(String messageBody) {
+    private void sendNotification(Map<String,String> msg) {
         Intent intent = new Intent(this, SendWifiActivity.class);
+        intent.putExtra("studentId",msg.get("studentId"));
+        intent.putExtra("subjectCode",msg.get("subjectCode"));
+        intent.putExtra("week",Integer.parseInt(msg.get("week")));
+        intent.putExtra("subjectName",msg.get("subjectName"));
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
+
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.ic_logo)
-                        .setContentTitle("FCM Message")
-                        .setContentText(messageBody)
-                        .setAutoCancel(true)
+                        .setContentTitle(msg.get("subjectName")+"["+msg.get("subjectCode")+"]")
+                        .setContentText(getString(R.string.info_noti))
+                        .setAutoCancel(false)
                         .setSound(defaultSoundUri)
                         .setContentIntent(pendingIntent);
 

@@ -13,5 +13,8 @@ public class Constants {
     public static final int ATTENDANCE_LATE =3;
     public static final int ATTENDANCE_RUN = 4; //출튀
 
+    public static final int studentNotFound = -1;
+    public static final String deviceNotRegisterd = "-1";
+
 
 }
