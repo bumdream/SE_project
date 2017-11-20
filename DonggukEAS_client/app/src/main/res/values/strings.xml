@@ -22,4 +22,11 @@
     <string name="info_no_wifi">wifi를 사용할 수 없습니다</string>
     <string name="info_attendance_ok">출석처리가 완료되었습니다</string>
     <string name="info_attendance_no">결석처리 되었습니다.</string>
+    <string name="table_student_device">STUDENT_DEVICE</string>
+    <string name="table_device_reserve">RESERVATION_DEVICE</string>
+    <string name="info_register">기기등록이 되어 있지 않습니다.\n"확인" 버튼을 눌러 기기등록을 신청해주세요.</string>
+    <string name="confirm">확인</string>
+    <string name="cancel">취소</string>
+    <string name="info_wait_device_accept">CS센터에서 기기 승인이 아직 처리되지 않았습니다.</string>
+    <string name="info_re_register">로그인 된 학번과 기기가 일치하지 않습니다.\n해당 기기로 다시 등록하시겠습니까?\n(다시 CS센터의 승인을 기다려야하며 이전 기기는 사용하실 수 없습니다.)</string>
 </resources>
