@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:layout_marginBottom="5dp"
+    android:background="@color/Grey100"
+    >
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:padding="10dp"
+        android:src="@drawable/ic_man"/>
+
+    <LinearLayout
+        android:id="@+id/ll_infobg"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="4"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="3dp">
+
+        <TextView
+            android:id="@+id/tv_student_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="학번"
+            android:textColor="@color/Grey700"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tv_student_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:focusable="true"
+            android:lines="1"
+            android:text="이름"
+            android:textColor="@color/Grey700"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/ll_bg"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="@color/material_grey"
+        >
+        <ImageView
+            android:padding="15dp"
+            android:src="@drawable/ic_none"
+            android:layout_height="match_parent"
+            android:textSize="10sp"
+            android:id="@+id/iv_attendance"
+            android:layout_width="match_parent"/>
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
