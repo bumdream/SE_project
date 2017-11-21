@@ -38,6 +38,7 @@ public class SendWifiActivity extends AppCompatActivity {
     private LinearLayout mLoadingView;
     private String mStudentId;
     private Toast mToast;
+    private boolean mInitStatus;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +51,8 @@ public class SendWifiActivity extends AppCompatActivity {
         String subjectCode = i.getStringExtra("subjectCode");
         String subjectName = i.getStringExtra("subjectName");
         int week = i.getIntExtra("week",-1);
+
+
 
 
         Log.d("#####",subjectCode+"/"+subjectName+"/"+week);
@@ -102,10 +105,12 @@ public class SendWifiActivity extends AppCompatActivity {
         });
         mWifiReference = mDatabase.getReference(getString(R.string.table_wifi)).child(mStudentId);
         mWifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+        mInitStatus = (mWifiManager.getWifiState()== WifiManager.WIFI_STATE_ENABLED)?true:false;
 
         sendWifiInfo();
     }
     public void sendWifiInfo() {
+
         if (mWifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
 
             // register WiFi scan results receiver
@@ -115,12 +120,13 @@ public class SendWifiActivity extends AppCompatActivity {
             registerReceiver(new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-
                     List<ScanResult> wifiResult = mWifiManager.getScanResults();
                     final int N = wifiResult.size();
                     mLoadingView.setVisibility(View.INVISIBLE);
                     mWifiReference.setValue(new StudentWifi(mStudentId,wifiResult.get(0).BSSID));
 
+                    //wifi 탐색이 끝나면 wifi 를 다시 원상태로 해놓는다.
+                    mWifiManager.setWifiEnabled(mInitStatus);
                 }
             }, filter);
 
