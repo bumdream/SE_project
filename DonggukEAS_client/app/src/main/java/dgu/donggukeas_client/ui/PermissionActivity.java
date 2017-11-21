@@ -41,7 +41,7 @@ public class PermissionActivity extends AppCompatActivity {
             @Override
             public void onPermissionGranted() {
                 Toast.makeText(PermissionActivity.this, "Permission Granted", Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(PermissionActivity.this, MainActivity.class);
+                Intent i = new Intent(PermissionActivity.this, LoginActivity.class);
                 startActivity(i);
                 finish();
             }

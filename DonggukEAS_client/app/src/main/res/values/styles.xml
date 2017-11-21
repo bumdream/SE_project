@@ -12,7 +12,11 @@
 
     </style>
 
+    <style name="MyAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/colorPrimary</item>
 
+        <item name="windowNoTitle">true</item>
+    </style>
 
 
 

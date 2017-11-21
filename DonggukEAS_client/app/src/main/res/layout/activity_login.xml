@@ -43,6 +43,7 @@
             android:textColor="@color/white"
             android:textColorHint="@color/Grey100"
             android:paddingBottom="10dp"
+            android:inputType="textPassword"
     />
         <Button
             android:id="@+id/btn_login"

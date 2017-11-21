@@ -29,4 +29,5 @@
     <string name="cancel">취소</string>
     <string name="info_wait_device_accept">CS센터에서 기기 승인이 아직 처리되지 않았습니다.</string>
     <string name="info_re_register">로그인 된 학번과 기기가 일치하지 않습니다.\n해당 기기로 다시 등록하시겠습니까?\n(다시 CS센터의 승인을 기다려야하며 이전 기기는 사용하실 수 없습니다.)</string>
+    <string name="info_QrGenerate">QR코드가 생성되었습니다.</string>
 </resources>

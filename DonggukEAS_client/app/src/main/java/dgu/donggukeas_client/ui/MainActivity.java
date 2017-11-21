@@ -154,6 +154,10 @@ public class MainActivity extends AppCompatActivity {
                                 Log.d("#####","2-1. 현재기기와 같다");
                                 //현재기기와 같을 경우
                                 //QR코드 띄우기
+                                Intent i = new Intent(MainActivity.this, QRActivity.class);
+                                i.putExtra("studentId",mStudentId);
+                                startActivity(i);
+
                             }
                             else{
                                 Log.d("#####","2-2. 현재기기와 다르다");
