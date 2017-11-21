@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">DonggukEAS_professor</string>
+    <string name="register">휴대폰 등록요청</string>
+    <string name="id_hint">professorID</string>
+    <string name="not_register">등록된 기기가 아닙니다.</string>
+    <string name="attendance">출석QR생성</string>
+    <string name="login">login</string>
+    <string name="pw_hint">password</string>
+    <string name="success_login">로그인 성공</string>
+    <string name="failed_login_pw">비밀번호가 틀렸습니다</string>
+    <string name="failed_login_id">존재하지 않는 교직원번호입니다</string>
+    <string name="table_student_auth">STUDENT_AUTH</string>
+    <string name="table_professor_auth">PROFESSOR_AUTH</string>
+    <string name="title_classes">수강과목</string>
+    <string name="extra_id">EXTRA_ID</string>
+    <string name="extra_subject_code">EXTRA_SC</string>
+    <string name="extra_subject_name">EXTRA_SN</string>
+    <string name="table_student">STUDENT</string>
+    <string name="table_professor">PROFESSOR</string>
+    <string name="table_subject">SUBJECT</string>
+    <string name="table_student_classes">STUDENT_CLASSES</string>
+    <string name="table_attendance">STUDENT_ATTENDANCE</string>
+    <string name="lecture_subject">lectureSubject</string>
+    <string name="title_attendance">출석관리</string>
+    <string name="attendance_Status">AttendanceStats</string>
+
+
+</resources>
