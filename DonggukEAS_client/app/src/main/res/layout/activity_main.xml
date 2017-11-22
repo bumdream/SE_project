@@ -9,8 +9,8 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:background="@color/material_teal"
+        android:layout_height="60dp"
+        android:background="@color/blueGrey900"
         android:elevation="3dp"
         >
 
@@ -44,15 +44,15 @@
         </LinearLayout>
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_gravity="bottom|right"
-            android:layout_marginBottom="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginRight="16dp"
             android:src="@drawable/ic_qr_small"
-            fab:fab_colorNormal="@color/material_teal"
-            fab:fab_colorPressed="@color/material_teal"
-            fab:fab_colorRipple="@color/material_teal"/>
+            fab:fab_colorNormal="@color/blueGrey900"
+            fab:fab_colorPressed="@color/blueGrey900"
+            fab:fab_colorRipple="@color/blueGrey900"/>
     </FrameLayout>
 
 
