@@ -17,9 +17,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import dgu.donggukeas_client.R;
-import dgu.donggukeas_client.model.Auth;
-import dgu.donggukeas_client.model.Subject;
-import dgu.donggukeas_client.model.WaitingClient;
+import dgu.donggukeas_client.model.firebase.StudentAuth;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -47,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Subject sub = new Subject();
+                SubjectInfo sub = new SubjectInfo();
                 sub.setSubjectName(mIdEt.getText().toString());
                 sub.setSubjectCode(mPwEt.getText().toString());
                 mDatabaseClients.child(sub.getSubjectCode()).setValue(sub);
@@ -63,26 +61,26 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //로그인 부분 firebase 에서 해당아이디에 관한 정보를 가져와 비교한다
-                final Auth inputAuth = new Auth(mIdEt.getText().toString(),mPwEt.getText().toString());
-                mDatabaseClients.child(inputAuth.getId()).addListenerForSingleValueEvent(
+                final StudentAuth inputStudentAuth = new StudentAuth(mIdEt.getText().toString(),mPwEt.getText().toString());
+                mDatabaseClients.child(inputStudentAuth.getId()).addListenerForSingleValueEvent(
                         new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 // Get user value
-                                Auth auth = dataSnapshot.getValue(Auth.class);
-                                if(auth!=null) {
+                                StudentAuth studentAuth = dataSnapshot.getValue(StudentAuth.class);
+                                if(studentAuth !=null) {
 
-                                    if (inputAuth.getPw().equals(auth.getPw())) {
-                                        Log.d("#####", auth.getId() + "success");
+                                    if (inputStudentAuth.getPw().equals(studentAuth.getPw())) {
+                                        Log.d("#####", studentAuth.getId() + "success");
                                         Intent i = new Intent(LoginActivity.this,MainActivity.class);
-                                        i.putExtra(getString(R.string.extra_id),auth.getId());
+                                        i.putExtra(getString(R.string.extra_id), studentAuth.getId());
                                         Toast.makeText(LoginActivity.this,getString(R.string.success_login),Toast.LENGTH_SHORT).show();
                                         startActivity(i);
 
                                     }
 
                                     else {
-                                        Log.d("#####", auth.getId() + "failed");
+                                        Log.d("#####", studentAuth.getId() + "failed");
                                         Toast.makeText(LoginActivity.this,getString(R.string.failed_login_pw),Toast.LENGTH_SHORT).show();
 
                                         // ...
@@ -90,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                                 else{
 
-                                    Log.d("#####",inputAuth.getId()+"cannot find");
+                                    Log.d("#####", inputStudentAuth.getId()+"cannot find");
                                     Toast.makeText(LoginActivity.this,getString(R.string.failed_login_id),Toast.LENGTH_SHORT).show();
 
                                 }

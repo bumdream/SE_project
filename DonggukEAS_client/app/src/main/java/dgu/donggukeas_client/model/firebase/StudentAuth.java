@@ -1,18 +1,18 @@
-package dgu.donggukeas_client.model;
+package dgu.donggukeas_client.model.firebase;
 
 /**
  * Created by hanseungbeom on 2017. 11. 6..
  */
 
-public class Auth {
+public class StudentAuth {
     private String id;
     private String pw;
 
-    public Auth(String id,String pw){
+    public StudentAuth(String id, String pw){
         this.id = id;
         this.pw = pw;
     }
-    public Auth(){
+    public StudentAuth(){
 
     }
     public String getId() {

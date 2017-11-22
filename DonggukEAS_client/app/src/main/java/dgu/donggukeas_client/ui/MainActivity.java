@@ -8,11 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,27 +34,25 @@ import java.util.Calendar;
 
 import dgu.donggukeas_client.R;
 import dgu.donggukeas_client.adapter.SubjectAdapter;
-import dgu.donggukeas_client.model.Student;
-import dgu.donggukeas_client.model.Subject;
-import dgu.donggukeas_client.model.WaitingClient;
+import dgu.donggukeas_client.model.firebase.Student;
+import dgu.donggukeas_client.model.SubjectInfo;
 import dgu.donggukeas_client.model.firebase.StudentDevice;
+import dgu.donggukeas_client.model.firebase.Subject;
 import dgu.donggukeas_client.util.Constants;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    private String mStudentId;
+    public static String mStudentId;
     private RecyclerView mRecyclerView;
     private SubjectAdapter mSubjectAdapter;
-    private ArrayList<Subject> result;
     private FloatingActionButton mQrBtn;
     private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mDeviceRef,mReserveRef;
+    private DatabaseReference mDeviceRef,mReserveRef,mStudentRef, mSubjectRef,mAttendanceRef;
 
-    private Button mRegisterBtn,mCreateQRBtn;
-    private TextView mDeviceId;
-    private ImageView mQrView;
     private Toast mToast;
+
+    private ArrayList<SubjectInfo> mSubjects;
 
     public final static int WHITE = 0xFFFFFFFF;
     public final static int BLACK = 0xFF000000;
@@ -73,12 +69,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         mRecyclerView = (RecyclerView)findViewById(R.id.rv_subject);
-        result = new ArrayList<>();
+        mSubjects = new ArrayList<>();
+        //result = new ArrayList<>();
 
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        mSubjectAdapter = new SubjectAdapter(this,result);
+        mSubjectAdapter = new SubjectAdapter(this,mSubjects);
         mRecyclerView.setAdapter(mSubjectAdapter);
 
         mStudentId = getIntent().getStringExtra(getString(R.string.extra_id));
@@ -90,9 +87,64 @@ public class MainActivity extends AppCompatActivity {
                 .child(mStudentId);
         mReserveRef = mFirebaseDatabase.getReference(getString(R.string.table_device_reserve))
                 .child(mStudentId);
+        mStudentRef = mFirebaseDatabase.getReference(getString(R.string.table_student))
+                .child(mStudentId);
+        mSubjectRef = mFirebaseDatabase.getReference(getString(R.string.table_subject));
 
 
-        updateList();
+
+        mStudentRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Student student = dataSnapshot.getValue(Student.class);
+                if(student!=null){
+                    for(int i = 0; i<student.getListenSubject().size(); i++){
+                        mSubjects.add(new SubjectInfo(student.getListenSubject().get(i)));
+                    }
+                    mSubjectAdapter.notifyDataSetChanged();
+                    mSubjectRef.addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                            Subject subject = dataSnapshot.getValue(Subject.class);
+                            int index = getItemIndex(subject.getSubjectCode());
+                            if(index != Constants.subjectNotFound){
+                                mSubjects.get(index).setSubjectName(subject.getSubjectName());
+                                mSubjectAdapter.notifyItemChanged(index);
+                            }
+                        }
+
+                        @Override
+                        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                        }
+
+                        @Override
+                        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                        }
+
+                        @Override
+                        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        //TODO subject 의 모든 주차에 대해 학생 출석정보 받아와서 리스트에 넣기
+
         mQrBtn.setOnClickListener(new View.OnClickListener() {
             /*
                 FROM  STUDENT_DEVICE
@@ -177,48 +229,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
     }
 
-    private void updateList(){
-        mDatabaseClients.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                result.add(dataSnapshot.getValue(Subject.class));
-                mSubjectAdapter.notifyDataSetChanged();
-            }
 
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                Subject subject = dataSnapshot.getValue(Subject.class);
-                int index = getItemIndex(subject);
-                result.set(index,subject);
-                mSubjectAdapter.notifyItemChanged(index);
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                Subject subject = dataSnapshot.getValue(Subject.class);
-                int index = getItemIndex(subject);
-                result.remove(index);
-                mSubjectAdapter.notifyItemRemoved(index);
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private int getItemIndex(Subject subject){
-        int index = -1;
-        for(int i=0;i<result.size();i++){
-            if(result.get(i).getSubjectCode().equals(subject.getSubjectCode())) {
+    private int getItemIndex(String subjectCode){
+        int index = Constants.subjectNotFound;
+        for(int i=0;i<mSubjects.size();i++){
+            if(mSubjects.get(i).getSubjectCode().equals(subjectCode)) {
                 index = i;
                 break;
             }
@@ -283,28 +302,6 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    Bitmap encodeAsBitmap(String str) throws WriterException {
-        BitMatrix result;
-        try {
-            result = new MultiFormatWriter().encode(str,
-                    BarcodeFormat.QR_CODE,WIDTH ,HEIGHT , null);
-        } catch (IllegalArgumentException iae) {
-            // Unsupported format
-            return null;
-        }
-        int w = result.getWidth();
-        int h = result.getHeight();
-        int[] pixels = new int[w * h];
-        for (int y = 0; y < h; y++) {
-            int offset = y * w;
-            for (int x = 0; x < w; x++) {
-                pixels[offset + x] = result.get(x, y) ? BLACK : WHITE;
-            }
-        }
-        Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        bitmap.setPixels(pixels, 0, w, 0, 0, w, h);
-        return bitmap;
-    }
 
     public static String getDateFromMilli(Long milli){
         Calendar calendar = Calendar.getInstance();
