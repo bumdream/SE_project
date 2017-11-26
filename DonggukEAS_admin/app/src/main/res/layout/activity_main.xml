@@ -2,11 +2,31 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="dgu.donggukeas_admin.ui.MainActivity">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/blueGrey900"
+        android:elevation="3dp"
+        >
 
+        <TextView
+            android:id="@+id/tv_title"
+            android:textSize="18dp"
+            android:textColor="@color/white"
+            android:paddingLeft="10dp"
+            android:text="@string/info_no_subject"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+    </android.support.v7.widget.Toolbar>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -22,14 +42,11 @@
                 android:layout_gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
-            <dgu.donggukeas_admin.util.PointsOverlayView
-                android:id="@+id/points_overlay_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:background="@color/blue" >
+                android:background="@color/black_semi_transparent70" >
                 <TextView
                     android:id="@+id/tv_decode"
                     android:text="@string/decode"
@@ -45,31 +62,83 @@
                     android:layout_height="match_parent" />
             </LinearLayout>
 
+            <dgu.donggukeas_admin.util.PointsOverlayView
+                android:id="@+id/points_overlay_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <Button
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:text="QR초기화"
+                android:layout_gravity="right|top"
+                android:onClick="init_qrString"/>
+
         </FrameLayout>
 
     </LinearLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
+
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+
             android:padding="3dp"
             android:orientation="vertical">
-            <TextView
-                android:textStyle="bold"
-                android:textSize="10sp"
-                android:text="@string/student_list"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_register"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
             </android.support.v7.widget.RecyclerView>
         </LinearLayout>
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="visible"
+            android:gravity="center"
+            android:background="@drawable/gradient_selector">
+            <ImageView
+                android:src="@drawable/ic_no_qr"
+                android:tint="@color/Grey500"
+                android:layout_width="50dp"
+                android:layout_height="50dp" />
+            <TextView
+                android:textSize="13sp"
+                android:paddingTop="10dp"
+                android:textColor="@color/Grey700"
+                android:gravity="center"
+                android:text="@string/no_qr_init"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:textSize="10sp"
+                android:textColor="@color/Grey700"
+                android:gravity="center"
+                android:text="@string/no_qr_init_detail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+        </LinearLayout>
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:src="@drawable/ic_teacher"
+            fab:fab_colorNormal="@color/blueGrey900"
+            fab:fab_colorPressed="@color/blueGrey900"
+            fab:fab_colorRipple="@color/blueGrey900"
+            />
+    </FrameLayout>
 </LinearLayout>

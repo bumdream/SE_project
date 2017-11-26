@@ -23,7 +23,9 @@ import com.google.firebase.messaging.RemoteMessage;
 
 
 import dgu.donggukeas_client.R;
+import dgu.donggukeas_client.ui.ResultActivity;
 import dgu.donggukeas_client.ui.SendWifiActivity;
+import dgu.donggukeas_client.util.Constants;
 
 
 public class MyFirebaseMessageService extends FirebaseMessagingService{
@@ -47,22 +49,39 @@ public class MyFirebaseMessageService extends FirebaseMessagingService{
             /*Log.d(TAG, "Message data payload: " + remoteMessage.getData().get("studentId"));
             Log.d(TAG, "Message data payload: " + remoteMessage.getData().get("subjectCode"));
             Log.d(TAG, "Message data payload: " + remoteMessage.getData().get("week"));*/
-            handleNow();
+            Log.d("#####","message data:"+remoteMessage.getData().get("notiType"));
+            int isNotiType = Integer.parseInt(remoteMessage.getData().get("notiType"));
+            //boolean isNormalMode = (remoteMessage.getData().get("notiType").equals(Constants.normal))?true:false;
 
             //앱이 현재 실행중이면
             if(isRunningInForeground()){
-                Intent intent = new Intent(this, SendWifiActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("studentId",remoteMessage.getData().get("studentId"));
-                intent.putExtra("subjectCode",remoteMessage.getData().get("subjectCode"));
-                intent.putExtra("week",Integer.parseInt(remoteMessage.getData().get("week")));
-                intent.putExtra("subjectName",remoteMessage.getData().get("subjectName"));
-                startActivity(intent);
+
+                //결과 페이지가 아니면
+                if(isNotiType!=Constants.ATTENDANCE_RESULT){
+                    //와이파이 전송 액티비티로
+                    Intent intent = new Intent(this, SendWifiActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra("studentId", remoteMessage.getData().get("studentId"));
+                    intent.putExtra("subjectCode", remoteMessage.getData().get("subjectCode"));
+                    intent.putExtra("week", Integer.parseInt(remoteMessage.getData().get("week")));
+                    intent.putExtra("subjectName", remoteMessage.getData().get("subjectName"));
+                    startActivity(intent);
+                }
+                else{
+                    Intent intent = new Intent(this, ResultActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra("studentId", remoteMessage.getData().get("studentId"));
+                    intent.putExtra("subjectCode", remoteMessage.getData().get("subjectCode"));
+                    intent.putExtra("week", Integer.parseInt(remoteMessage.getData().get("week")));
+                    intent.putExtra("subjectName", remoteMessage.getData().get("subjectName"));
+                    startActivity(intent);
+                }
             }
 
             //앱이 실행중이 아니면
             else{
-                sendNotification(remoteMessage.getData());
+
+                sendNotification(remoteMessage.getData(),isNotiType);
             }
         }
 
@@ -90,39 +109,64 @@ public class MyFirebaseMessageService extends FirebaseMessagingService{
     /**
      * Handle time allotted to BroadcastReceivers.
      */
-    private void handleNow() {
-        Log.d(TAG, "Short lived task is done.");
-    }
+    private void sendNotification(Map<String,String> msg,int notiType) {
 
-    /**
-     * Create and show a simple notification containing the received FCM message.
-     *
-     *
-     */
-    private void sendNotification(Map<String,String> msg) {
-        Intent intent = new Intent(this, SendWifiActivity.class);
-        intent.putExtra("studentId",msg.get("studentId"));
-        intent.putExtra("subjectCode",msg.get("subjectCode"));
-        intent.putExtra("week",Integer.parseInt(msg.get("week")));
-        intent.putExtra("subjectName",msg.get("subjectName"));
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+            if(notiType!=Constants.ATTENDANCE_RESULT){
+                Intent intent = new Intent(this, SendWifiActivity.class);
+                intent.putExtra("studentId", msg.get("studentId"));
+                intent.putExtra("subjectCode", msg.get("subjectCode"));
+                intent.putExtra("week", Integer.parseInt(msg.get("week")));
+                intent.putExtra("subjectName", msg.get("subjectName"));
+
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+                        PendingIntent.FLAG_ONE_SHOT);
 
 
-        Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_logo)
-                        .setContentTitle(msg.get("subjectName")+"["+msg.get("subjectCode")+"]")
-                        .setContentText(getString(R.string.info_noti))
-                        .setAutoCancel(false)
-                        .setSound(defaultSoundUri)
-                        .setContentIntent(pendingIntent);
+                //TODO 출튀면 도망가는 그림으로 나오게
+                Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                NotificationCompat.Builder notificationBuilder =
+                        new NotificationCompat.Builder(this)
+                                .setContentTitle(msg.get("subjectName") + "[" + msg.get("subjectCode") + "]")
+                                .setContentText(getString(R.string.info_noti))
+                                .setSmallIcon(R.drawable.ic_logo)
+                                .setAutoCancel(true)
+                                .setSound(defaultSoundUri)
+                                .setContentIntent(pendingIntent);
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                NotificationManager notificationManager =
+                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+                notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+            }
+            else{
+                Intent intent = new Intent(this, ResultActivity.class);
+                intent.putExtra("studentId", msg.get("studentId"));
+                intent.putExtra("subjectCode", msg.get("subjectCode"));
+                intent.putExtra("week", Integer.parseInt(msg.get("week")));
+                intent.putExtra("subjectName", msg.get("subjectName"));
+
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+                        PendingIntent.FLAG_ONE_SHOT);
+
+
+                //TODO 출튀면 도망가는 그림으로 나오게
+                Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                NotificationCompat.Builder notificationBuilder =
+                        new NotificationCompat.Builder(this)
+                                .setContentTitle(msg.get("subjectName") + "[" + msg.get("subjectCode") + "]")
+                                .setContentText(getString(R.string.info_result))
+                                .setSmallIcon(R.drawable.ic_logo)
+                                .setAutoCancel(true)
+                                .setSound(defaultSoundUri)
+                                .setContentIntent(pendingIntent);
+
+                NotificationManager notificationManager =
+                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                notificationManager.notify(1 /* ID of notification */, notificationBuilder.build());
+            }
+
     }
 }

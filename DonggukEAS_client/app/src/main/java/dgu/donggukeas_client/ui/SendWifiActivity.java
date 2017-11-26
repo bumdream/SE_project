@@ -22,49 +22,51 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
+import java.util.Random;
 
 import dgu.donggukeas_client.R;
 import dgu.donggukeas_client.model.firebase.AttendanceStatus;
+import dgu.donggukeas_client.model.firebase.RunAwayStudent;
 import dgu.donggukeas_client.model.firebase.StudentWifi;
 import dgu.donggukeas_client.util.Constants;
+import dgu.donggukeas_client.util.Utils;
 
 public class SendWifiActivity extends AppCompatActivity {
 
-    private TextView mSubName,mSubCode;
+    private TextView mSubName, mSubCode;
 
     private FirebaseDatabase mDatabase;
-    private DatabaseReference mWifiReference,mAttendanceReference;
+    private DatabaseReference mWifiReference, mAttendanceReference;
     private WifiManager mWifiManager;
     private LinearLayout mLoadingView;
     private String mStudentId;
     private Toast mToast;
     private boolean mInitStatus;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_wifi);
-        mSubName = (TextView)findViewById(R.id.tv_subject_name);
-        mSubCode = (TextView)findViewById(R.id.tv_subject_code) ;
-        mLoadingView = (LinearLayout)findViewById(R.id.ll_loading);
+        mSubName = (TextView) findViewById(R.id.tv_subject_name);
+        mSubCode = (TextView) findViewById(R.id.tv_subject_code);
+        mLoadingView = (LinearLayout) findViewById(R.id.ll_loading);
         Intent i = getIntent();
         mStudentId = i.getStringExtra("studentId");
         String subjectCode = i.getStringExtra("subjectCode");
         String subjectName = i.getStringExtra("subjectName");
-        int week = i.getIntExtra("week",-1);
+        int week = i.getIntExtra("week", -1);
 
 
-
-
-        Log.d("#####",subjectCode+"/"+subjectName+"/"+week);
+        Log.d("#####", subjectCode + "/" + subjectName + "/" + week);
         mSubName.setText(subjectName);
-        mSubCode.setText("["+subjectCode+"]");
+        mSubCode.setText("[" + subjectCode + "]");
 
         mDatabase = FirebaseDatabase.getInstance();
         mAttendanceReference = mDatabase.getReference(getString(R.string.table_attendance))
                 .child(subjectCode)
                 .child(String.valueOf(week));
 
-        mAttendanceReference.addChildEventListener(new ChildEventListener() {
+       /* mAttendanceReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
@@ -73,8 +75,8 @@ public class SendWifiActivity extends AppCompatActivity {
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 AttendanceStatus as = dataSnapshot.getValue(AttendanceStatus.class);
-                if(as.getStudentId().equals(mStudentId)){
-                    switch(as.getAttendanceStatus()){
+                if (as.getStudentId().equals(mStudentId)) {
+                    switch (as.getAttendanceStatus()) {
                         case Constants.ATTENDANCE_OK:
                             showToast(getString(R.string.info_attendance_ok));
                             break;
@@ -102,13 +104,17 @@ public class SendWifiActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        });*/
         mWifiReference = mDatabase.getReference(getString(R.string.table_wifi)).child(mStudentId);
+      /*      mWifiReference = mDatabase.getReference(getString(R.string.table_runaway_student))
+                    .child(subjectCode)
+                    .child(mStudentId);*/
         mWifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
-        mInitStatus = (mWifiManager.getWifiState()== WifiManager.WIFI_STATE_ENABLED)?true:false;
+        mInitStatus = (mWifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) ? true : false;
 
         sendWifiInfo();
     }
+
     public void sendWifiInfo() {
 
         if (mWifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
@@ -123,29 +129,31 @@ public class SendWifiActivity extends AppCompatActivity {
                     List<ScanResult> wifiResult = mWifiManager.getScanResults();
                     final int N = wifiResult.size();
                     mLoadingView.setVisibility(View.INVISIBLE);
-                    mWifiReference.setValue(new StudentWifi(mStudentId,wifiResult.get(0).BSSID));
+                    Random random = new Random();
+                    //가장쎈 3개중에 랜덤으로 전송
+                    mWifiReference.setValue(new StudentWifi(mStudentId, wifiResult.get(random.nextInt(3)).BSSID, Utils.getDateFromMilli(System.currentTimeMillis())));
 
                     //wifi 탐색이 끝나면 wifi 를 다시 원상태로 해놓는다.
                     mWifiManager.setWifiEnabled(mInitStatus);
+                    finish();
                 }
             }, filter);
 
             // start WiFi Scan
             mWifiManager.startScan();
             mLoadingView.setVisibility(View.VISIBLE);
-        }
-        else{
+        } else {
             mWifiManager.setWifiEnabled(true);
             sendWifiInfo();
         }
     }
 
 
-    public void showToast(String str){
-        if(mToast!=null)
+    public void showToast(String str) {
+        if (mToast != null)
             mToast.cancel();
 
-        mToast = Toast.makeText(this,str,Toast.LENGTH_SHORT);
+        mToast = Toast.makeText(this, str, Toast.LENGTH_SHORT);
         mToast.show();
     }
 

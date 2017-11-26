@@ -33,4 +33,10 @@
     <string name="table_subject">SUBJECT</string>
     <string name="extra_subject_code">subjectCode</string>
     <string name="extra_subject_name">subjectName</string>
+    <string name="table_runaway_student">RUNAWAY_STUDENT</string>
+    <string name="retry">재시도</string>
+    <string name="ok">확인</string>
+    <string name="info_result">출석체크 결과입니다.</string>
+    <string name="info_not_match">위치정보가 일치하지 않습니다.\n다시 시도해주세요.</string>
+    <string name="late">지각</string>
 </resources>

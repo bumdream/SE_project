@@ -14,6 +14,7 @@
     <color name="Grey100">#f5f5f5</color>
     <color name="Grey50">#fafafa</color>
     <color name="white">#ffffff</color>
+
     <color name="blue">#3573BF</color>
     <color name="blueGrey50">#ECEFF1</color>
     <color name="green">#28AE61</color>
@@ -23,6 +24,7 @@
     <color name="black_semi_transparent">#33000000</color>
     <color name="material_red">#F44336</color>
     <color name="material_pink">#e91e63</color>
+    <color name="material_blue">#2196F3</color>
     <color name="material_pupple">#9C27B0</color>
     <color name="material_deep_purple">#673AB7</color>
     <color name="material_indigo">#3F51B5</color>

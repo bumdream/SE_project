@@ -1,18 +1,24 @@
-package dgu.donggukeas_client.model.firebase;
+package dgu.donggukeas_admin.model.firebase;
 
 /**
- * Created by hanseungbeom on 2017. 11. 19..
+ * Created by hanseungbeom on 2017. 11. 23..
  */
 
-public class StudentWifi {
+public class RunAwayStudent {
     private String studentId;
-    private String wifiInfo;
     private String updatedTime;
 
-    public StudentWifi(String studentId, String wifiInfo,String updatedTime) {
+    public RunAwayStudent() {
+    }
+
+    public RunAwayStudent(String studentId, String updatedTime) {
         this.studentId = studentId;
-        this.wifiInfo = wifiInfo;
         this.updatedTime = updatedTime;
+    }
+
+    public RunAwayStudent(String studentId) {
+        this.studentId = studentId;
+        updatedTime = "-1";
     }
 
     public String getStudentId() {
@@ -21,14 +27,6 @@ public class StudentWifi {
 
     public void setStudentId(String studentId) {
         this.studentId = studentId;
-    }
-
-    public String getWifiInfo() {
-        return wifiInfo;
-    }
-
-    public void setWifiInfo(String wifiInfo) {
-        this.wifiInfo = wifiInfo;
     }
 
     public String getUpdatedTime() {

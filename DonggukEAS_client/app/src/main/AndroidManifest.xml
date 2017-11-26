@@ -33,8 +33,9 @@
         </activity>
         <activity
             android:name=".ui.QRActivity"
-            android:theme="@style/MyAlertDialogStyle"></activity>
-        <activity android:name=".ui.AttendanceActivity"></activity>
+            android:theme="@style/MyAlertDialogStyle" />
+        <activity android:name=".ui.AttendanceActivity" />
+        <activity android:name=".ui.ResultActivity"></activity>
     </application>
 
 </manifest>

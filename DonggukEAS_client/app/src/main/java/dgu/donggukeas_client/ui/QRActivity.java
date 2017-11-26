@@ -76,9 +76,5 @@ public class QRActivity extends AppCompatActivity  {
         return bitmap;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        finish();
-    }
+
 }

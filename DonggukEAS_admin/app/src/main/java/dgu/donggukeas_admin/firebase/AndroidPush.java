@@ -13,7 +13,7 @@ public class AndroidPush {
     /**
      * Sends notification to mobile, YOU DON'T NEED TO UNDERSTAND THIS METHOD
      */
-    public static void sendPushNotification(final String subjectCode, final int week,final String subjectName,final String studentId,final String deviceToken) {
+    public static void sendPushNotification(final String subjectCode,final int notiType, final int week,final String subjectName,final String studentId,final String deviceToken) {
         new Thread(new Runnable() {
             @Override public void run() { //
                 try {
@@ -25,6 +25,8 @@ public class AndroidPush {
                             String.valueOf(week) +
                             "\",\"subjectName\":\"" +
                             subjectName +
+                            "\",\"notiType\":\"" +
+                            String.valueOf(notiType) +
                             "\",\"studentId\":\"" +
                             studentId+
                             "\"},\"to\":\"" +

@@ -1,10 +1,10 @@
 <resources>
- <string name="app_name">DonggukEAS_admin</string>
+    <string name="app_name">DonggukEAS_admin</string>
     <string name="accept">승인</string>
     <string name="reserve_list">기기승인요청</string>
     <string name="decode">QR코드를 비춰주세요</string>
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
-   <string name="table_subject">SUBJECT</string>
+    <string name="table_subject">SUBJECT</string>
     <string name="student_list">학생리스트</string>
     <string name="table_student">STUDENT</string>
     <string name="table_device">STUDENT_DEVICE</string>
@@ -13,6 +13,22 @@
     <string name="info_not_this_student_class">이 수업을 듣는 학생이 아닙니다.</string>
     <string name="info_not_register_device">등록되지 않은 기기입니다.</string>
     <string name="push_title">title</string>
-    <string name="info_sending_push">학생의 기기로 위치정보 요청을 보냈습니다</string>
+    <string name="info_sending_push">학생의 기기로 위치정보 요청을 보냈습니다.</string>
+    <string name="table_runaway_active">RUNAWAY_ACTIVE</string>
+    <string name="table_runaway_student">RUNAWAY_STUDENT</string>
+    <string name="info_no_subject">과목정보 없음</string>
+    <string name="no_qr_init">과목정보가 없습니다.</string>
+    <string name="no_qr_init_detail">교수님의 QR코드를 먼저 읽혀주세요.</string>
+    <string name="info_stop_attendance">출석을 종료하시겠습니까?\n이후부터 오는 학생은 지각 처리됩니다.</string>
+    <string name="info_stop_reader">수업을 종료하시겠습니까?\n리더기의 정보가 초기화 됩니다.</string>
+    <string name="confirm">확인</string>
+    <string name="cancel">취소</string>
+    <string name="info_stop_attendance_toast">지금부터 오는 학생은 지각처리 됩니다.</string>
+    <string name="info_reader_reset">리더기가 초기화되었습니다.</string>
+    <string name="info_search_deny">출튀체크를 하려면 먼저 출석마감을 해주세요.</string>
+    <string name="info_start_search">출튀체크를 시작합니다.</string>
+    <string name="info_end_search">출튀자 의심명단을 전송하였습니다.</string>
+    <string name="info_already_done">해당 학생은 이미 출석처리 되었습니다.</string>
+    <string name="info_already_donee">해당 학생은 이미 출석처리 되었습니다.</string>
 
 </resources>

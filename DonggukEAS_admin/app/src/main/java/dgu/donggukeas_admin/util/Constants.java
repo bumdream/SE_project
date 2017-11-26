@@ -17,4 +17,9 @@ public class Constants {
     public static final String deviceNotRegisterd = "-1";
 
 
+    public static final int ATTENDANCE_REQUEST = 0;
+    public static final int RUNAWAY_REQUEST = 1;
+    public static final int ATTENDANCE_RESULT = 2;
+
+    public static int RUN_AWAY_WAITING_TIME=10;
 }

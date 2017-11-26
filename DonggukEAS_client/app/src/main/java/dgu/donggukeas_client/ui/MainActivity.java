@@ -54,10 +54,6 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<SubjectInfo> mSubjects;
 
-    public final static int WHITE = 0xFFFFFFFF;
-    public final static int BLACK = 0xFF000000;
-    public final static int WIDTH = 400;
-    public final static int HEIGHT = 400;
 
     private DatabaseReference mDatabaseClients;
     @Override
