@@ -35,6 +35,7 @@ public class ResultActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
 
+
         mResultImg = (ImageView)findViewById(R.id.iv_img);
         mResult = (TextView)findViewById(R.id.tv_result);
         mInfo = (TextView)findViewById(R.id.tv_info);

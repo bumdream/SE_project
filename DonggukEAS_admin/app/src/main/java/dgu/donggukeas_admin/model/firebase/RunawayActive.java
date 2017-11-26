@@ -5,20 +5,20 @@ package dgu.donggukeas_admin.model.firebase;
  */
 
 public class RunawayActive {
-    private boolean isActive;
+    private int isActive;
+
+    public RunawayActive(int isActive) {
+        this.isActive = isActive;
+    }
 
     public RunawayActive() {
     }
 
-    public RunawayActive(boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    public boolean isActive() {
+    public int getIsActive() {
         return isActive;
     }
 
-    public void setActive(boolean active) {
-        isActive = active;
+    public void setIsActive(int isActive) {
+        this.isActive = isActive;
     }
 }

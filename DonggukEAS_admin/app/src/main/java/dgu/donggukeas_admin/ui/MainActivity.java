@@ -125,6 +125,8 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
                                 public void onClick(DialogInterface dialog, int whichButton){
                                     mIsEndAttendance = true;
                                     mFab.setImageResource(R.drawable.ic_out);
+                                    mRunawayActiveRef.child(mSubject.getSubjectCode())
+                                            .setValue(new RunawayActive(Constants.SUBJECT_ATTENDANCE_END));
                                     showToast(getString(R.string.info_stop_attendance_toast));
                                 }
                             })
@@ -197,7 +199,6 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
         DatabaseReference reference = mDatabase.getReference(getString(R.string.table_subject));
         mWeeks = week;
         //해당 과목 subjectCode 로 mSubject(전연변수) 동기화
-
         reference.child(subjectCode).addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
@@ -260,6 +261,8 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
                 });
         mWifiReference.addChildEventListener(wifiListener);
         mRunawayActiveRef.child(subjectCode).addChildEventListener(runawayListener);
+
+        mRunawayActiveRef.child(subjectCode).setValue(new RunawayActive(Constants.SUBJECT_ATTENDANCE_ACTIVE));
     }
     private void stopReader() {
         mIsEndAttendance = true;
@@ -272,6 +275,7 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
         mAttendanceReference.child(mSubject.getSubjectCode()).child(String.valueOf(mWeeks)).removeEventListener(attendanceListener);
         mWifiReference.removeEventListener(wifiListener);
         mRunawayActiveRef.child(mSubject.getSubjectCode()).removeEventListener(runawayListener);
+        mRunawayActiveRef.child(mSubject.getSubjectCode()).setValue(new RunawayActive(Constants.SUBJECT_END));
         unregisterReceiver(broadcastReceiver);
         mSubject = null;
         mTitle.setText(getString(R.string.info_no_subject));
@@ -535,7 +539,7 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
                         AttendanceStatus as = dataSnapshot.getValue(AttendanceStatus.class);
-                        if(as.getAttendanceStatus()==Constants.ATTENDANCE_NONE){
+
                             //미처리인 경우만 출석 처리
                             if (!mIsEndAttendance) {
                                 //출석처리중
@@ -591,40 +595,41 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
 
                                 }
                                 else{
+                                    if(as.getAttendanceStatus()==Constants.ATTENDANCE_NONE){
+                                        if (isExistWifi(studentWifi.getWifiInfo())) {
+                                            Log.d("#####", "출석처리끝남(일반모드):와이파이동일(" + studentWifi.getStudentId() + ")");
+                                            mAttendanceReference.child(mSubject.getSubjectCode())
+                                                    .child(String.valueOf(mWeeks))
+                                                    .child(studentWifi.getStudentId())
+                                                    .setValue(new AttendanceStatus(studentWifi.getStudentId(), Constants.ATTENDANCE_LATE));
+                                        }
+                                        else{
+                                            Log.d("#####", "출석처리끝남(일반모드):와이파이다름(" + studentWifi.getStudentId() + ")");
+                                            //와이파이 다른경우 미처리.
+                                            mAttendanceReference.child(mSubject.getSubjectCode())
+                                                    .child(String.valueOf(mWeeks))
+                                                    .child(studentWifi.getStudentId())
+                                                    .setValue(new AttendanceStatus(studentWifi.getStudentId(), Constants.ATTENDANCE_NONE));
+                                        }
 
-                                    if (isExistWifi(studentWifi.getWifiInfo())) {
-                                        Log.d("#####", "출석처리끝남(일반모드):와이파이동일(" + studentWifi.getStudentId() + ")");
-                                        mAttendanceReference.child(mSubject.getSubjectCode())
-                                                .child(String.valueOf(mWeeks))
-                                                .child(studentWifi.getStudentId())
-                                                .setValue(new AttendanceStatus(studentWifi.getStudentId(), Constants.ATTENDANCE_LATE));
+                                        //결과를 학생에게 보내준다
+                                        AndroidPush.sendPushNotification(mSubject.getSubjectCode(),
+                                                Constants.ATTENDANCE_RESULT,
+                                                mWeeks,
+                                                mSubject.getSubjectName(),
+                                                studentWifi.getStudentId(),
+                                                mStudents.get(getStudentIndex(studentWifi.getStudentId())).getDeviceToken());
                                     }
                                     else{
-                                        Log.d("#####", "출석처리끝남(일반모드):와이파이다름(" + studentWifi.getStudentId() + ")");
-                                        //와이파이 다른경우 미처리.
-                                        mAttendanceReference.child(mSubject.getSubjectCode())
-                                                .child(String.valueOf(mWeeks))
-                                                .child(studentWifi.getStudentId())
-                                                .setValue(new AttendanceStatus(studentWifi.getStudentId(), Constants.ATTENDANCE_NONE));
+                                        //TODO 이미 출석처리되었다는 메세지 보내기
+                                        showToast(getString(R.string.info_already_done));
                                     }
 
-                                    //결과를 학생에게 보내준다
-                                    AndroidPush.sendPushNotification(mSubject.getSubjectCode(),
-                                            Constants.ATTENDANCE_RESULT,
-                                            mWeeks,
-                                            mSubject.getSubjectName(),
-                                            studentWifi.getStudentId(),
-                                            mStudents.get(getStudentIndex(studentWifi.getStudentId())).getDeviceToken());
                                 }
 
 
                             }
                         }
-                        else{
-                            //TODO 이미 출석처리되었다는 메세지 보내기
-                            showToast(getString(R.string.info_already_done));
-                        }
-                    }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
@@ -661,8 +666,8 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
 
         @Override
         public void onChildChanged(final DataSnapshot dataSnapshot, String s) {
-            Boolean value = dataSnapshot.getValue(Boolean.class);
-            if(value == true){
+            int value = dataSnapshot.getValue(Integer.class);
+            if(value == Constants.SUBJECT_ATTENDANCE_RUNAWAY_ACTIVE){
                 if(mIsEndAttendance){
                     mIsCheckingMode = true;
                     Log.d("#####", "aaa1:");
@@ -689,7 +694,7 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
                                             .child(runAwayStudent.getStudentId())
                                             .setValue(runAwayStudent);
                                 }
-                                dataSnapshot.getRef().setValue(new Boolean(false));
+                                dataSnapshot.getRef().setValue(new Integer(Constants.SUBJECT_ATTENDANCE_RUNAWAY_END));
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
@@ -726,7 +731,7 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
                     }
                 }
                 else{
-                    dataSnapshot.getRef().setValue(new Boolean(false));
+                    //dataSnapshot.getRef().setValue(new Integer(Constants.SUBJECT_ATTENDANCE_ACTIVE));
                     showToast(getString(R.string.info_search_deny));
                 }
             }
