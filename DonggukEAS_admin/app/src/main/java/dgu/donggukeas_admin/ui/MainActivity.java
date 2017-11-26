@@ -543,30 +543,36 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
                             //미처리인 경우만 출석 처리
                             if (!mIsEndAttendance) {
                                 //출석처리중
-                                if (isExistWifi(studentWifi.getWifiInfo())) {
-                                    Log.d("#####", "출석중:(" + studentWifi.getStudentId() + ") 와이파이 동일");
+                                if(as.getAttendanceStatus() == Constants.ATTENDANCE_NONE){
+                                    if (isExistWifi(studentWifi.getWifiInfo())) {
+                                        Log.d("#####", "출석중:(" + studentWifi.getStudentId() + ") 와이파이 동일");
 
-                                    mAttendanceReference.child(mSubject.getSubjectCode())
-                                            .child(String.valueOf(mWeeks))
-                                            .child(studentWifi.getStudentId())
-                                            .setValue(new AttendanceStatus(studentWifi.getStudentId(), Constants.ATTENDANCE_OK));
+                                        mAttendanceReference.child(mSubject.getSubjectCode())
+                                                .child(String.valueOf(mWeeks))
+                                                .child(studentWifi.getStudentId())
+                                                .setValue(new AttendanceStatus(studentWifi.getStudentId(), Constants.ATTENDANCE_OK));
 
 
 
-                                } else {
-                                    Log.d("#####", "출석중(" + studentWifi.getStudentId() + "): 와이파이 다름");
-                                    mAttendanceReference.child(mSubject.getSubjectCode())
-                                            .child(String.valueOf(mWeeks))
-                                            .child(studentWifi.getStudentId())
-                                            .setValue(new AttendanceStatus(studentWifi.getStudentId(), Constants.ATTENDANCE_NONE));
+                                    } else {
+                                        Log.d("#####", "출석중(" + studentWifi.getStudentId() + "): 와이파이 다름");
+                                        mAttendanceReference.child(mSubject.getSubjectCode())
+                                                .child(String.valueOf(mWeeks))
+                                                .child(studentWifi.getStudentId())
+                                                .setValue(new AttendanceStatus(studentWifi.getStudentId(), Constants.ATTENDANCE_NONE));
+                                    }
+                                    //TODO 학생에게 알려주기
+                                    AndroidPush.sendPushNotification(mSubject.getSubjectCode(),
+                                            Constants.ATTENDANCE_RESULT,
+                                            mWeeks,
+                                            mSubject.getSubjectName(),
+                                            studentWifi.getStudentId(),
+                                            mStudents.get(getStudentIndex(studentWifi.getStudentId())).getDeviceToken());
                                 }
-                                //TODO 학생에게 알려주기
-                                AndroidPush.sendPushNotification(mSubject.getSubjectCode(),
-                                        Constants.ATTENDANCE_RESULT,
-                                        mWeeks,
-                                        mSubject.getSubjectName(),
-                                        studentWifi.getStudentId(),
-                                        mStudents.get(getStudentIndex(studentWifi.getStudentId())).getDeviceToken());
+                                else{
+                                    showToast(getString(R.string.info_already_done));
+                                }
+
                             } else {
                                 //출석처리가 끝난경우
                                 if (mIsCheckingMode) {
@@ -621,7 +627,7 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
                                                 mStudents.get(getStudentIndex(studentWifi.getStudentId())).getDeviceToken());
                                     }
                                     else{
-                                        //TODO 이미 출석처리되었다는 메세지 보내기
+
                                         showToast(getString(R.string.info_already_done));
                                     }
 
