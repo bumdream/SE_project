@@ -10,316 +10,358 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:background="@color/material_teal"
-        android:elevation="3dp"
-        >
+        android:background="@color/blueGrey900"
+        android:elevation="3dp">
 
         <TextView
             android:id="@+id/tv_title"
-            android:textSize="18dp"
-            android:textColor="@color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:paddingLeft="20dp"
             android:text="@string/title_attendance"
-            android:textStyle="bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:textColor="@color/white"
+            android:textSize="18dp"
+            android:textStyle="bold" />
 
 
     </android.support.v7.widget.Toolbar>
-
-    <TextView
-        android:id="@+id/tv_a_subjectName"
-        android:layout_width="match_parent"
-        android:layout_height="41dp"
-        android:gravity="bottom|center_horizontal"
-        android:text="subjectName"
-        android:textColor="@color/Grey700"
-        android:textSize="24sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/tv_a_subjectCode"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:gravity="center_vertical|center_horizontal"
-        android:paddingTop="5dp"
-        android:text="[CSE-1111]"
-        android:textColor="@color/Grey500"
-        android:textSize="14sp"
-        android:textStyle="bold" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="79dp">
-
-        <TextView
-            android:id="@+id/tv_a_week"
-            android:layout_width="80dp"
-            android:layout_height="35dp"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:gravity="center_vertical|center_horizontal"
-            android:text="주차"
-            android:textColor="@color/material_blue_grey"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <ImageButton
-            android:id="@+id/ib_a_left"
-            android:layout_width="54dp"
-            android:layout_height="22dp"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/tv_a_week"
-            android:layout_toStartOf="@+id/tv_a_week"
-            android:background="@color/material_buttonbg"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/ic_left" />
-
-        <ImageButton
-            android:id="@+id/ib_a_right"
-            android:layout_width="54dp"
-            android:layout_height="22dp"
-            android:layout_alignTop="@+id/ib_a_left"
-            android:layout_toEndOf="@+id/tv_a_week"
-            android:layout_toRightOf="@+id/tv_a_week"
-            android:background="#fafafa"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/ic_right" />
-
-        <TextView
-            android:id="@+id/tv_weekdays"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/tv_a_week"
-            android:paddingLeft="10dp"
-            android:paddingStart="10dp"
-            android:text="TextView"
-            android:textSize="16sp" />
-    </RelativeLayout>
-
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="25dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/tv_na"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:text="미처리"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/img_na"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_runawayTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="출튀"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/img_runaway"
-            android:layout_marginLeft="8dp" />
-
-        <TextView
-            android:id="@+id/tv_late"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="지각"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/img_late"
-            android:layout_marginLeft="8dp" />
-
-        <TextView
-            android:id="@+id/tv_absent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:text="결석"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/img_absent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_attend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="9dp"
-            android:text="출석"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/img_attend"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/img_na"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            app:srcCompat="@drawable/ic_greydot"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/tv_runawayTitle"
-            android:layout_marginLeft="8dp"
-            app:layout_constraintVertical_bias="0.4" />
-
-        <ImageView
-            android:id="@+id/img_runaway"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            app:srcCompat="@drawable/ic_blackdot"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/tv_late"
-            android:layout_marginLeft="8dp" />
-
-        <ImageView
-            android:id="@+id/img_late"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_alignLeft="@+id/textView2"
-            android:layout_alignStart="@+id/textView2"
-            android:layout_alignTop="@+id/textView2"
-            app:srcCompat="@drawable/ic_amberdot"
-            app:layout_constraintLeft_toRightOf="@+id/tv_absent"
-            android:layout_marginLeft="8dp"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="0dp"
-            app:layout_constraintVertical_bias="0.545" />
-
-        <ImageView
-            android:id="@+id/img_absent"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            app:srcCompat="@drawable/ic_reddot"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/tv_attend"
-            android:layout_marginLeft="8dp"
-            app:layout_constraintVertical_bias="0.4" />
-
-        <ImageView
-            android:id="@+id/img_attend"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_alignEnd="@+id/img_na"
-            android:layout_alignParentTop="true"
-            android:layout_alignRight="@+id/img_na"
-            android:layout_toRightOf="@+id/textView2"
-            app:srcCompat="@drawable/ic_greendot"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginLeft="8dp"
-            app:layout_constraintVertical_bias="0.4"
-            app:layout_constraintLeft_toLeftOf="parent" />
-
-    </android.support.constraint.ConstraintLayout>
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/tv_a_subjectName"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="41dp"
+            android:gravity="bottom|center_horizontal"
+            android:text="subjectName"
+            android:textColor="@color/Grey700"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_attendance"
+        <TextView
+            android:id="@+id/tv_a_subjectCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical|center_horizontal"
+            android:paddingTop="5dp"
+            android:text="[CSE-1111]"
+            android:textColor="@color/Grey500"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="79dp">
+
+            <TextView
+                android:id="@+id/tv_a_week"
+                android:layout_width="80dp"
+                android:layout_height="35dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:gravity="center_vertical|center_horizontal"
+                android:text="주차"
+                android:textColor="@color/material_blue_grey"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/ib_a_left"
+                android:layout_width="54dp"
+                android:layout_height="22dp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/tv_a_week"
+                android:layout_toStartOf="@+id/tv_a_week"
+                android:background="@color/material_buttonbg"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/ic_left" />
+
+            <ImageButton
+                android:id="@+id/ib_a_right"
+                android:layout_width="54dp"
+                android:layout_height="22dp"
+                android:layout_alignTop="@+id/ib_a_left"
+                android:layout_toEndOf="@+id/tv_a_week"
+                android:layout_toRightOf="@+id/tv_a_week"
+                android:background="#fafafa"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/ic_right" />
+
+            <TextView
+                android:id="@+id/tv_weekdays"
                 android:layout_width="match_parent"
-                android:layout_height="363dp">
-
-            </android.support.v7.widget.RecyclerView>
-        </LinearLayout>
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/tv_a_week"
+                android:paddingLeft="10dp"
+                android:paddingStart="10dp"
+                android:text="TextView"
+                android:textSize="16sp" />
+        </RelativeLayout>
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="25dp"
+            android:orientation="horizontal">
 
-            <com.github.clans.fab.FloatingActionMenu
-                android:id="@+id/menu"
-                android:layout_width="171dp"
-                android:layout_height="191dp"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                android:layout_gravity="bottom|center_horizontal"
-
-                android:layout_marginBottom="20dp"
-                app:fab_colorNormal="@color/material_light_teal"
-                app:fab_colorPressed="@color/material_teal"
-                app:fab_colorRipple="@color/material_teal"
+            <TextView
+                android:id="@+id/tv_na"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="미처리"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="0.359"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:menu_animationDelayPerItem="50"
-                app:menu_backgroundColor="@android:color/transparent"
-                app:menu_buttonSpacing="0dp"
-                app:menu_colorNormal="@color/material_light_teal"
-                app:menu_colorPressed="@color/colorAccent"
-                app:menu_fab_size="normal"
-                app:menu_icon="@drawable/ic_fab"
-                app:menu_labels_colorNormal="#333333"
-                app:menu_labels_colorPressed="#444444"
-                app:menu_labels_colorRipple="#66FFFFFF"
-                app:menu_labels_cornerRadius="3dp"
-                app:menu_labels_ellipsize="none"
-                app:menu_labels_hideAnimation="@anim/fab_slide_out_to_right"
-                app:menu_labels_margin="0dp"
-                app:menu_labels_maxLines="-1"
-                app:menu_labels_padding="8dp"
-                app:menu_labels_paddingBottom="4dp"
-                app:menu_labels_paddingLeft="4dp"
-                app:menu_labels_paddingRight="4dp"
-                app:menu_labels_paddingTop="4dp"
-                app:menu_labels_position="left"
-                app:menu_labels_showAnimation="@anim/fab_slide_in_from_right"
+                app:layout_constraintLeft_toRightOf="@+id/img_na"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                app:menu_labels_showShadow="true"
-                app:menu_labels_singleLine="false"
-                app:menu_labels_textColor="#FFFFFF"
-                app:menu_labels_textSize="14sp"
-                app:menu_openDirection="up"
-                app:menu_shadowColor="#66000000"
-                app:menu_shadowRadius="4dp"
-                app:menu_shadowXOffset="1dp"
-                app:menu_shadowYOffset="3dp"
-                app:menu_showShadow="true"
-                tools:layout_editor_absoluteX="8dp"
-                tools:layout_editor_absoluteY="120dp">
+            <TextView
+                android:id="@+id/tv_runawayTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="출튀"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toRightOf="@+id/img_runaway"
+                android:layout_marginLeft="8dp" />
 
+            <TextView
+                android:id="@+id/tv_late"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="지각"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toRightOf="@+id/img_late"
+                android:layout_marginLeft="8dp" />
 
-                <com.github.clans.fab.FloatingActionButton
-                    android:id="@+id/fab_runaway"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_runaway"
-                    app:fab_colorNormal="@color/material_red"
-                    app:fab_colorPressed="@color/Grey500"
-                    app:fab_label="출튀 체크"
-                    app:fab_size="mini" />
+            <TextView
+                android:id="@+id/tv_absent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="결석"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@+id/img_absent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <com.github.clans.fab.FloatingActionButton
-                    android:id="@+id/fab_qr"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_qr_small"
-                    app:fab_colorNormal="@color/Grey700"
-                    app:fab_colorPressed="@color/Grey500"
-                    app:fab_label="QR Code"
-                    app:fab_size="mini" />
+            <TextView
+                android:id="@+id/tv_attend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="9dp"
+                android:text="출석"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@+id/img_attend"
+                app:layout_constraintTop_toTopOf="parent" />
 
+            <ImageView
+                android:id="@+id/img_na"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                app:srcCompat="@drawable/ic_greydot"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@+id/tv_runawayTitle"
+                android:layout_marginLeft="8dp"
+                app:layout_constraintVertical_bias="0.4" />
 
-            </com.github.clans.fab.FloatingActionMenu>
+            <ImageView
+                android:id="@+id/img_runaway"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                app:srcCompat="@drawable/ic_blackdot"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@+id/tv_late"
+                android:layout_marginLeft="8dp" />
+
+            <ImageView
+                android:id="@+id/img_late"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                app:srcCompat="@drawable/ic_amberdot"
+                app:layout_constraintLeft_toRightOf="@+id/tv_absent"
+                android:layout_marginLeft="8dp"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="0dp"
+                app:layout_constraintVertical_bias="0.545" />
+
+            <ImageView
+                android:id="@+id/img_absent"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                app:srcCompat="@drawable/ic_reddot"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@+id/tv_attend"
+                android:layout_marginLeft="8dp"
+                app:layout_constraintVertical_bias="0.4" />
+
+            <ImageView
+                android:id="@+id/img_attend"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignEnd="@+id/img_na"
+                android:layout_alignParentTop="true"
+                android:layout_alignRight="@+id/img_na"
+                app:srcCompat="@drawable/ic_greendot"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginLeft="8dp"
+                app:layout_constraintVertical_bias="0.4"
+                app:layout_constraintLeft_toLeftOf="parent" />
+
         </android.support.constraint.ConstraintLayout>
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_attendance"
+                    android:layout_width="match_parent"
+                    android:layout_height="363dp">
+
+                </android.support.v7.widget.RecyclerView>
+            </LinearLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.github.clans.fab.FloatingActionMenu
+                    android:id="@+id/menu"
+                    android:layout_width="171dp"
+                    android:layout_height="191dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_gravity="bottom|center_horizontal"
+
+                    android:layout_marginBottom="20dp"
+                    app:fab_colorNormal="@color/material_light_teal"
+                    app:fab_colorPressed="@color/material_teal"
+                    app:fab_colorRipple="@color/material_teal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHorizontal_bias="0.359"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:menu_animationDelayPerItem="50"
+                    app:menu_backgroundColor="@android:color/transparent"
+                    app:menu_buttonSpacing="0dp"
+                    app:menu_colorNormal="@color/material_light_teal"
+                    app:menu_colorPressed="@color/colorAccent"
+                    app:menu_fab_size="normal"
+                    app:menu_icon="@drawable/ic_fab"
+                    app:menu_labels_colorNormal="#333333"
+                    app:menu_labels_colorPressed="#444444"
+                    app:menu_labels_colorRipple="#66FFFFFF"
+                    app:menu_labels_cornerRadius="3dp"
+                    app:menu_labels_ellipsize="none"
+                    app:menu_labels_hideAnimation="@anim/fab_slide_out_to_right"
+                    app:menu_labels_margin="0dp"
+                    app:menu_labels_maxLines="-1"
+                    app:menu_labels_padding="8dp"
+                    app:menu_labels_paddingBottom="4dp"
+                    app:menu_labels_paddingLeft="4dp"
+                    app:menu_labels_paddingRight="4dp"
+                    app:menu_labels_paddingTop="4dp"
+                    app:menu_labels_position="left"
+                    app:menu_labels_showAnimation="@anim/fab_slide_in_from_right"
+
+                    app:menu_labels_showShadow="true"
+                    app:menu_labels_singleLine="false"
+                    app:menu_labels_textColor="#FFFFFF"
+                    app:menu_labels_textSize="14sp"
+                    app:menu_openDirection="up"
+                    app:menu_shadowColor="#66000000"
+                    app:menu_shadowRadius="4dp"
+                    app:menu_shadowXOffset="1dp"
+                    app:menu_shadowYOffset="3dp"
+                    app:menu_showShadow="true"
+                    tools:layout_editor_absoluteX="8dp"
+                    tools:layout_editor_absoluteY="120dp">
+
+
+                    <com.github.clans.fab.FloatingActionButton
+                        android:id="@+id/fab_runaway"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_runaway"
+                        app:fab_colorNormal="@color/material_red"
+                        app:fab_colorPressed="@color/Grey500"
+                        app:fab_label="출튀 체크"
+                        app:fab_size="mini" />
+
+                    <com.github.clans.fab.FloatingActionButton
+                        android:id="@+id/fab_qr"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_qr_small"
+                        app:fab_colorNormal="@color/Grey700"
+                        app:fab_colorPressed="@color/Grey500"
+                        app:fab_label="QR Code"
+                        app:fab_size="mini" />
+
+
+                </com.github.clans.fab.FloatingActionMenu>
+            </android.support.constraint.ConstraintLayout>
+
+        </FrameLayout>
+
+
+    </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_pb"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/black_semi_transparent70"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="invisible"
+            android:weightSum="1">
+
+
+            <ImageView
+                android:id="@+id/iv_gps"
+                android:layout_width="match_parent"
+                android:layout_height="108dp"
+                android:layout_marginBottom="25dp"
+                app:srcCompat="@drawable/ic_gps" />
+
+
+            <ProgressBar
+                android:id="@+id/pb_wifiprogress"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginBottom="30dp" />
+
+            <TextView
+                android:id="@+id/tv_progress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.09"
+                android:gravity="center_vertical|center_horizontal"
+                android:text="학생들의 출튀 여부를 체크 중입니다."
+                android:textColor="@color/Grey50"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
     </FrameLayout>
-
-
 </LinearLayout>
+

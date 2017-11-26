@@ -15,14 +15,18 @@
     <string name="extra_id">EXTRA_ID</string>
     <string name="extra_subject_code">EXTRA_SC</string>
     <string name="extra_subject_name">EXTRA_SN</string>
+    <string name="extra_ra_subject_code">EXTRA_RSC</string>
+    <string name="extra_ra_subject_week">EXTRA_RSW</string>
     <string name="table_student">STUDENT</string>
     <string name="table_professor">PROFESSOR</string>
     <string name="table_subject">SUBJECT</string>
     <string name="table_student_classes">STUDENT_CLASSES</string>
     <string name="table_attendance">STUDENT_ATTENDANCE</string>
+    <string name="table_runaway_student">RUNAWAY_STUDENT</string>
     <string name="lecture_subject">lectureSubject</string>
     <string name="title_attendance">출석관리</string>
     <string name="attendance_Status">AttendanceStats</string>
+    <string name="runaway_search">isActive</string>
 
 
 </resources>

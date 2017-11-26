@@ -22,8 +22,13 @@
             android:name=".ui.QrActivity"
             android:label="QR Code"
             android:theme="@style/MyAlertDialogStyle" />
-        <activity android:name=".ui.AttendanceMenuActivity" />
-        <activity android:name=".ui.RunawayActivity"></activity>
+        <activity
+            android:name=".ui.RunawayActivity"
+            android:launchMode="singleInstance"
+            >
+        </activity>
+
+
     </application>
 
 </manifest>

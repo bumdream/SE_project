@@ -191,7 +191,7 @@ public class AttendanceAdapter extends RecyclerView.Adapter<AttendanceAdapter.At
             builder.setSingleChoiceItems(mItems, attendanceStat, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int item) {
                     FirebaseDatabase mDatabase;
-                    DatabaseReference mStudentReference,mDeviceReference,mAttendanceReference;
+                    DatabaseReference mAttendanceReference;
 
                     mDatabase = FirebaseDatabase.getInstance();
                     mAttendanceReference = mDatabase.getReference("STUDENT_ATTENDANCE");

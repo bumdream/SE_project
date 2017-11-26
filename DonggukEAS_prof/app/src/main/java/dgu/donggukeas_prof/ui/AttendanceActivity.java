@@ -8,7 +8,9 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.google.firebase.database.ChildEventListener;
@@ -21,15 +23,20 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import dgu.donggukeas_prof.R;
 import dgu.donggukeas_prof.adapter.AttendanceAdapter;
 import dgu.donggukeas_prof.adapter.SubjectAdapter;
 import dgu.donggukeas_prof.model.StudentInfo;
 import dgu.donggukeas_prof.model.firebase.AttendanceStatus;
+import dgu.donggukeas_prof.model.firebase.RunawayActive;
 import dgu.donggukeas_prof.model.firebase.Student;
 import dgu.donggukeas_prof.model.firebase.Subject;
+import dgu.donggukeas_prof.util.Constants;
+import dgu.donggukeas_prof.util.SemesterDate;
 
 public class AttendanceActivity extends AppCompatActivity {
     private RecyclerView mAttendanceRecyclerView;
@@ -37,16 +44,20 @@ public class AttendanceActivity extends AppCompatActivity {
     private TextView subjectCode, subjectName, subjectWeek, subjectWeekDays;
     private FloatingActionButton fabQR, fabRA;
     private FirebaseDatabase mDatabase;
-    private DatabaseReference mStudentReference,mDeviceReference,mAttendanceReference;
+    private DatabaseReference mStudentReference,mDeviceReference,mAttendanceReference, mRunawayActiveReference;
     private Subject mSubject;
     private ArrayList<StudentInfo> mStudents;
     private AttendanceAdapter mAdapter;
-    private int currentWeek;
+    private LinearLayout mProgressLayout;
+    private int currentWeek, mTodaysWeek;
     private ImageButton ibLeft, ibRight;
     private Calendar semesterStart = null, currentDate = null, semesterEnd = null;
     private Calendar weekStartDay = null, weekEndDay = null;
     private int startDay=0, startMonth=0;
     private int endDay=0, endMonth=0;
+    private boolean isProgress = false;
+    //private boolean isRunawayButtonClicked = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +88,11 @@ public class AttendanceActivity extends AppCompatActivity {
         weekStartDay = Calendar.getInstance();
         weekEndDay = Calendar.getInstance();
 
+        currentWeek = getWeek();
+        mTodaysWeek = currentWeek;
+        updateWeekInfo(currentWeek);
+
+
 
         fabQR = (FloatingActionButton)findViewById(R.id.fab_qr);
         fabQR.setOnClickListener(new View.OnClickListener() {
@@ -87,13 +103,129 @@ public class AttendanceActivity extends AppCompatActivity {
                 i.putExtra("QRCODE",subjectCode.getText().toString());
                 Log.d("#####",subjectCode.getText().toString());
 
+
                 startActivity(i);
 
             }
         });
 
-        currentWeek = getWeek();
-        updateWeekInfo(currentWeek);
+        fabRA = (FloatingActionButton)findViewById(R.id.fab_runaway);
+        fabRA.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               // isRunawayButtonClicked = true;
+                isProgress = true;
+
+                final String mSubjectCode = subjectCode.getText().toString();
+
+                FirebaseDatabase mDatabase;
+                //DatabaseReference mRunawwayActiveReference;
+
+                mDatabase = FirebaseDatabase.getInstance();
+                mRunawayActiveReference = mDatabase.getReference("RUNAWAY_ACTIVE");
+
+
+
+
+                //mRunawwayActiveReference = mRunawwayActiveReference.child(mSubjectCode);
+
+                mRunawayActiveReference.child(mSubjectCode).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        RunawayActive ra = snapshot.getValue(RunawayActive.class);
+                        if(ra.getIsActive() == Constants.SUBJECT_ATTENDANCE_END) {
+                            //Toast.makeText(getApplicationContext(), "출석완료", Toast.LENGTH_LONG).show();
+                            RunawayActive mRunawayActive = new RunawayActive(Constants.SUBJECT_ATTENDANCE_RUNAWAY_ACTIVE);
+
+                            Map<String, Object> mRunawayValue = mRunawayActive.toMap();
+                            Map<String, Object> mNewRunaway = new HashMap<>();
+
+                            mNewRunaway.put(mSubjectCode,mRunawayValue);
+                            mRunawayActiveReference.updateChildren(mNewRunaway);
+
+                            mProgressLayout = (LinearLayout)findViewById(R.id.ll_pb);
+                            mProgressLayout.setVisibility(View.VISIBLE);
+
+////////////////
+                            mRunawayActiveReference.child(mSubjectCode).addChildEventListener(new ChildEventListener() {
+                                @Override
+                                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                                }
+
+                                @Override
+                                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                                    int value = dataSnapshot.getValue(Integer.class);
+                                    if(value == Constants.SUBJECT_ATTENDANCE_RUNAWAY_END){
+                                        isProgress = false;
+
+                                        mProgressLayout.setVisibility(View.INVISIBLE);
+
+                                        Intent i = new Intent(getApplicationContext(), RunawayActivity.class);
+
+                                        i.putExtra(getString(R.string.extra_ra_subject_code),subjectCode.getText().toString());
+                                        i.putExtra(getString(R.string.extra_ra_subject_week),mTodaysWeek);
+
+                                        //Log.d("#####",subjectCode.getText().toString());
+
+                                       // isRunawayButtonClicked = false;
+
+
+
+                                        startActivity(i);
+                                    }
+                                    Log.d("#####", "value:" + value);
+
+
+
+                                }
+
+                                @Override
+                                public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                                }
+
+                                @Override
+                                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
+
+
+                        }else
+                             Toast.makeText(getApplicationContext(),"출석이 아직 종료되지 않았습니다.\n잠시 후 다시 시도하세요.",Toast.LENGTH_LONG).show();
+
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+
+
+           /*여기 주석
+
+
+
+
+*/
+
+
+
+
+            }
+        });
+
+        //currentWeek = getWeek();
+        //updateWeekInfo(currentWeek);
+
         //mAdapter.setWeek(currentWeek);
 
         subjectWeek = (TextView)findViewById(R.id.tv_a_week);
@@ -190,12 +322,26 @@ public class AttendanceActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        if(isProgress == true)
+        {}
+        else {
+            super.onBackPressed();
+        }
+    }
+
+
     public int getWeek()
     {
        // semesterStart = Calendar.getInstance();
-        semesterStart.set(Calendar.YEAR,  2017);
-        semesterStart.set(Calendar.MONTH,  Calendar.AUGUST);
-        semesterStart.set(Calendar.DATE,  28);
+        //semesterStart.set(Calendar.YEAR,  2017);
+        //semesterStart.set(Calendar.MONTH,  Calendar.AUGUST);
+        //semesterStart.set(Calendar.DATE,  28);
+
+        semesterStart.set(Calendar.YEAR, SemesterDate.SEMESTER_START_YEAR);
+        semesterStart.set(Calendar.MONTH, SemesterDate.SEMESTER_START_MONTH);
+        semesterStart.set(Calendar.DATE, SemesterDate.SEMESTER_START_DATE);
 
         int startDate = semesterStart.get(Calendar.DAY_OF_YEAR);
         Log.d("###","startDate : "+startDate);
@@ -205,9 +351,13 @@ public class AttendanceActivity extends AppCompatActivity {
         Log.d("###","todayDate : "+todayDate);
 
       //  semesterEnd = Calendar.getInstance();
-        semesterEnd.set(Calendar.YEAR,  2017);
-        semesterEnd.set(Calendar.MONTH,  Calendar.DECEMBER);
-        semesterEnd.set(Calendar.DATE,  18);
+      //  semesterEnd.set(Calendar.YEAR,  2017);
+      //  semesterEnd.set(Calendar.MONTH,  Calendar.DECEMBER);
+      //  semesterEnd.set(Calendar.DATE,  18);
+
+        semesterEnd.set(Calendar.YEAR, SemesterDate.SEMESTER_END_YEAR);
+        semesterEnd.set(Calendar.MONTH, SemesterDate.SEMESTER_END_MONTH);
+        semesterEnd.set(Calendar.DATE, SemesterDate.SEMESTER_END_DATE);
 
 //        int endDate = semesterEnd.get(Calendar.DAY_OF_YEAR);
 
