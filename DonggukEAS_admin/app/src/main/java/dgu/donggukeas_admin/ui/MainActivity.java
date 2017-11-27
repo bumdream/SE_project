@@ -419,7 +419,7 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
     }
 
     public boolean isExistWifi(String BSSID) {
-        for (int i = 0; i < mWifiResults.size() && i<20; ++i) {
+        for (int i = 0; i < mWifiResults.size(); ++i) {
             if (BSSID.equals(mWifiResults.get(i).BSSID)) {
                 return true;
             }
