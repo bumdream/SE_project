@@ -63,11 +63,16 @@ public class MainActivity extends AppCompatActivity {
                 newSM4.put(sm.studentId, csAtd);
                 for(int index=1;index<=16;index++) {
                     reference.child("STUDENT_ATTENDANCE").child("CSE4058-02").child(String.valueOf(index)).updateChildren(newSM4);
+                    reference.child("STUDENT_ATTENDANCE").child("CSE2017-01").child(String.valueOf(index)).updateChildren(newSM4);
                 }
                 Map<String, Object> newSM5 = new HashMap<>();
 
                 newSM5.put(String.valueOf(stuNo), sm.studentId);
                 reference.child("SUBJECT").child("CSE4058-02").child("listenStudent").updateChildren(newSM5);
+                reference.child("SUBJECT").child("CSE2017-01").child("listenStudent").updateChildren(newSM5);
+
+
+
 
 
                 stuNo-=1;
@@ -83,6 +88,15 @@ public class MainActivity extends AppCompatActivity {
                 reference.child("SUBJECT").child("CSE4058-02").updateChildren(newSM6);
                 newSM6.put("subjectName", "소프트웨어공학개론");
                 reference.child("SUBJECT").child("CSE4058-02").updateChildren(newSM6);
+
+                Map<String, Object> newSM7 = new HashMap<>();
+                newSM7.put("days", "0101000");
+                reference.child("SUBJECT").child("CSE2017-01").updateChildren(newSM7);
+                newSM7.put("subjectCode", "CSE2017-01");
+                reference.child("SUBJECT").child("CSE2017-01").updateChildren(newSM7);
+                newSM7.put("subjectName", "자료구조와실습");
+                reference.child("SUBJECT").child("CSE2017-01").updateChildren(newSM7);
+
                 br.close();
             }catch (IOException e){}
         }

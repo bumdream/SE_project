@@ -44,6 +44,8 @@ public class stuModel {
         HashMap<String,Object> result = new HashMap<>();
         HashMap<String,Object> result1 = new HashMap<>();
         result1.put("0","CSE4058-02");
+        result1.put("1","CSE2017-01");
+
         result.put("studentId",studentId);
         result.put("studentName",name);
         result.put("listenSubject",result1);
