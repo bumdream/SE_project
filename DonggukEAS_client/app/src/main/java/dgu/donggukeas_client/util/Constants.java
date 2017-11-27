@@ -20,6 +20,10 @@ public class Constants {
     public static final int ATTENDANCE_RESULT = 2;
 
     ///
-
+    public static final int SUBJECT_ATTENDANCE_ACTIVE=0;
+    public static final int SUBJECT_ATTENDANCE_END=1;
+    public static final int SUBJECT_ATTENDANCE_RUNAWAY_ACTIVE=2;
+    public static final int SUBJECT_ATTENDANCE_RUNAWAY_END=3;
+    public static final int SUBJECT_END=4;
 
 }

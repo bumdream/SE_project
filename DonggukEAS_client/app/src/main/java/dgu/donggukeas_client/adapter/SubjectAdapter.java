@@ -64,9 +64,6 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectV
         return mSubjectInfos.size();
     }
 
-    public void swapData(){
-
-    }
 
     public class SubjectViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView subjectCode;

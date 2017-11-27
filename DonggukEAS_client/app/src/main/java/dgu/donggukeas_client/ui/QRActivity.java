@@ -21,6 +21,8 @@ public class QRActivity extends AppCompatActivity  {
 
     private String mStudentId;
     private ImageView mQRImg;
+
+    //QR 색깔
     public final static int WHITE = 0xFFFFFFFF;
     public final static int BLACK = 0xFF000000;
 
@@ -40,16 +42,14 @@ public class QRActivity extends AppCompatActivity  {
         catch (Exception e){}
 
     }
-/*
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-    }*/
+
+
 
     Bitmap encodeAsBitmap(String str) throws WriterException {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        //화면크기의 0.4, 0.7
         int height = (int)(displayMetrics.heightPixels * 0.4);
         int width = (int)(displayMetrics.widthPixels * 0.7);
 

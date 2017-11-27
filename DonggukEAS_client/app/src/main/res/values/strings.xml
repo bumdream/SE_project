@@ -39,4 +39,5 @@
     <string name="info_result">출석체크 결과입니다.</string>
     <string name="info_not_match">위치정보가 일치하지 않습니다.\n다시 시도해주세요.</string>
     <string name="late">지각</string>
+    <string name="table_subject_active">RUNAWAY_ACTIVE</string>
 </resources>

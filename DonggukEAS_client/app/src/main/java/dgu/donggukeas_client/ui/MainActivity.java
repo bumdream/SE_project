@@ -34,6 +34,7 @@ import java.util.Calendar;
 
 import dgu.donggukeas_client.R;
 import dgu.donggukeas_client.adapter.SubjectAdapter;
+import dgu.donggukeas_client.model.firebase.RunawayActive;
 import dgu.donggukeas_client.model.firebase.Student;
 import dgu.donggukeas_client.model.SubjectInfo;
 import dgu.donggukeas_client.model.firebase.StudentDevice;
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private SubjectAdapter mSubjectAdapter;
     private FloatingActionButton mQrBtn;
     private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mDeviceRef,mReserveRef,mStudentRef, mSubjectRef,mAttendanceRef;
+    private DatabaseReference mDeviceRef, mReserveRef, mStudentRef, mSubjectRef, mAttendanceRef, mSubjectActiveRef;
 
     private Toast mToast;
 
@@ -56,22 +57,23 @@ public class MainActivity extends AppCompatActivity {
 
 
     private DatabaseReference mDatabaseClients;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mQrBtn = (FloatingActionButton)findViewById(R.id.fab);
+        mQrBtn = (FloatingActionButton) findViewById(R.id.fab);
 
 
-        mRecyclerView = (RecyclerView)findViewById(R.id.rv_subject);
+        mRecyclerView = (RecyclerView) findViewById(R.id.rv_subject);
         mSubjects = new ArrayList<>();
         //result = new ArrayList<>();
 
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        mSubjectAdapter = new SubjectAdapter(this,mSubjects);
+        mSubjectAdapter = new SubjectAdapter(this, mSubjects);
         mRecyclerView.setAdapter(mSubjectAdapter);
 
         mStudentId = getIntent().getStringExtra(getString(R.string.extra_id));
@@ -86,25 +88,74 @@ public class MainActivity extends AppCompatActivity {
         mStudentRef = mFirebaseDatabase.getReference(getString(R.string.table_student))
                 .child(mStudentId);
         mSubjectRef = mFirebaseDatabase.getReference(getString(R.string.table_subject));
+        mSubjectActiveRef = mFirebaseDatabase.getReference(getString(R.string.table_subject_active));
 
 
-
+        //과목에 대한 정보를 불러온다.
         mStudentRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Student student = dataSnapshot.getValue(Student.class);
-                if(student!=null){
-                    for(int i = 0; i<student.getListenSubject().size(); i++){
+                if (student != null) {
+                    for (int i = 0; i < student.getListenSubject().size(); i++) {
                         mSubjects.add(new SubjectInfo(student.getListenSubject().get(i)));
                     }
                     mSubjectAdapter.notifyDataSetChanged();
+
                     mSubjectRef.addChildEventListener(new ChildEventListener() {
                         @Override
                         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                            Subject subject = dataSnapshot.getValue(Subject.class);
-                            int index = getItemIndex(subject.getSubjectCode());
-                            if(index != Constants.subjectNotFound){
+                            final Subject subject = dataSnapshot.getValue(Subject.class);
+                            final int index = getItemIndex(subject.getSubjectCode());
+                            if (index != Constants.subjectNotFound) {
                                 mSubjects.get(index).setSubjectName(subject.getSubjectName());
+
+                                //수업중인지 아닌지에 대한 리스너를 달아 준다
+                                mSubjectActiveRef.child(subject.getSubjectCode()).addChildEventListener(new ChildEventListener() {
+                                    @Override
+                                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                                        Integer active = dataSnapshot.getValue(Integer.class);
+
+                                        if (active != Constants.SUBJECT_END) {
+                                            mSubjects.get(index).setAttendanceChecking(true);
+                                            mSubjectAdapter.notifyItemChanged(index);
+                                        } else {
+                                            mSubjects.get(index).setAttendanceChecking(false);
+                                            mSubjectAdapter.notifyItemChanged(index);
+                                        }
+                                    }
+
+
+                                    @Override
+                                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                                        Integer active = dataSnapshot.getValue(Integer.class);
+                                        if (active != Constants.SUBJECT_END) {
+                                            mSubjects.get(index).setAttendanceChecking(true);
+                                            mSubjectAdapter.notifyItemChanged(index);
+
+
+                                        } else {
+                                            mSubjects.get(index).setAttendanceChecking(false);
+                                            mSubjectAdapter.notifyItemChanged(index);
+
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                                    }
+
+                                    @Override
+                                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
                                 mSubjectAdapter.notifyItemChanged(index);
                             }
                         }
@@ -164,23 +215,22 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         StudentDevice studentDevice = dataSnapshot.getValue(StudentDevice.class);
-                        if(studentDevice.getDeviceToken().equals(Constants.deviceNotRegisterd)){
+                        if (studentDevice.getDeviceToken().equals(Constants.deviceNotRegisterd)) {
                             //TODO 이렇게 할경우 모든 학생의 데이터를 미리 -1로 넣어줘야한다
                             //1. 기기가 없는 경우
-                            Log.d("#####","1.기기가 없는경우");
+                            Log.d("#####", "1.기기가 없는경우");
                             mReserveRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     StudentDevice reserveDevice = dataSnapshot.getValue(StudentDevice.class);
-                                    if(reserveDevice == null){
+                                    if (reserveDevice == null) {
 
-                                        Log.d("#####","1-1 기기 예약 NO");
+                                        Log.d("#####", "1-1 기기 예약 NO");
                                         //기기 예약도 안했으면
                                         //등록 메세지 띄우기
                                         showRegisterDialog();
-                                    }
-                                    else{
-                                        Log.d("#####","1-1 기기 예약 YES");
+                                    } else {
+                                        Log.d("#####", "1-1 기기 예약 YES");
                                         //기기 예약이 되어있으면
                                         //기다리라는 메세지 띄우기
                                         showToast(getString(R.string.info_wait_device_accept));
@@ -192,23 +242,21 @@ public class MainActivity extends AppCompatActivity {
 
                                 }
                             });
-                        }
-                        else{
+                        } else {
                             //2.기기가 있는 경우
-                            Log.d("#####","2. 기기 있는경우");
+                            Log.d("#####", "2. 기기 있는경우");
                             String thisDeviceToken = FirebaseInstanceId.getInstance().getToken();
 
-                            if(studentDevice.getDeviceToken().equals(thisDeviceToken)){
-                                Log.d("#####","2-1. 현재기기와 같다");
+                            if (studentDevice.getDeviceToken().equals(thisDeviceToken)) {
+                                Log.d("#####", "2-1. 현재기기와 같다");
                                 //현재기기와 같을 경우
                                 //QR코드 띄우기
                                 Intent i = new Intent(MainActivity.this, QRActivity.class);
-                                i.putExtra("studentId",mStudentId);
+                                i.putExtra("studentId", mStudentId);
                                 startActivity(i);
 
-                            }
-                            else{
-                                Log.d("#####","2-2. 현재기기와 다르다");
+                            } else {
+                                Log.d("#####", "2-2. 현재기기와 다르다");
                                 //현재기기와 다를 경우
                                 //경고 메세지 띄우기(새로 신청하시겠습니까? 새로 신청하면 이 학번은 이 기기로만 로그인 가능)
                                 showReRegisterDialog();
@@ -226,14 +274,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
     }
 
 
-    private int getItemIndex(String subjectCode){
+    private int getItemIndex(String subjectCode) {
         int index = Constants.subjectNotFound;
-        for(int i=0;i<mSubjects.size();i++){
-            if(mSubjects.get(i).getSubjectCode().equals(subjectCode)) {
+        for (int i = 0; i < mSubjects.size(); i++) {
+            if (mSubjects.get(i).getSubjectCode().equals(subjectCode)) {
                 index = i;
                 break;
             }
@@ -241,30 +288,30 @@ public class MainActivity extends AppCompatActivity {
         return index;
     }
 
-    public void showToast(String str){
-        if(mToast!=null)
+    public void showToast(String str) {
+        if (mToast != null)
             mToast.cancel();
 
-        mToast = Toast.makeText(this,str,Toast.LENGTH_SHORT);
+        mToast = Toast.makeText(this, str, Toast.LENGTH_SHORT);
         mToast.show();
     }
 
 
     //기기를 새로 등록할때 나오는 창
-    public void showRegisterDialog(){
+    public void showRegisterDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         builder.setMessage(R.string.info_register)
-                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener(){
+                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                     // 확인 버튼 클릭시 설정
-                    public void onClick(DialogInterface dialog, int whichButton){
+                    public void onClick(DialogInterface dialog, int whichButton) {
 
-                        mReserveRef.setValue(new StudentDevice(mStudentId,FirebaseInstanceId.getInstance().getToken()));
+                        mReserveRef.setValue(new StudentDevice(mStudentId, FirebaseInstanceId.getInstance().getToken()));
                     }
                 })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener(){
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     // 취소 버튼 클릭시 설정
-                    public void onClick(DialogInterface dialog, int whichButton){
+                    public void onClick(DialogInterface dialog, int whichButton) {
                         dialog.cancel();
                     }
                 });
@@ -274,22 +321,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //현재 기기와 등록된 기기가 다를때 나오는 메세지창
-    public void showReRegisterDialog(){
+    public void showReRegisterDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         builder.setMessage(R.string.info_re_register)
-                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener(){
+                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                     // 확인 버튼 클릭시 설정
-                    public void onClick(DialogInterface dialog, int whichButton){
+                    public void onClick(DialogInterface dialog, int whichButton) {
                         //현재 등록된 기기를 초기화하고
                         //해당 기기를 CS센터에 등록한다
-                        mDeviceRef.setValue(new StudentDevice(mStudentId,Constants.deviceNotRegisterd));
-                        mReserveRef.setValue(new StudentDevice(mStudentId,FirebaseInstanceId.getInstance().getToken()));
+                        mDeviceRef.setValue(new StudentDevice(mStudentId, Constants.deviceNotRegisterd));
+                        mReserveRef.setValue(new StudentDevice(mStudentId, FirebaseInstanceId.getInstance().getToken()));
                     }
                 })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener(){
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     // 취소 버튼 클릭시 설정
-                    public void onClick(DialogInterface dialog, int whichButton){
+                    public void onClick(DialogInterface dialog, int whichButton) {
                         dialog.cancel();
                     }
                 });
@@ -299,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public static String getDateFromMilli(Long milli){
+    public static String getDateFromMilli(Long milli) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(milli);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/HH/mm/ss");

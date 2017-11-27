@@ -112,7 +112,6 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
         mIsCheckingMode = false;
         mIsEndAttendance = true;
         mQRflag = false;
-        //updateList();
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -168,9 +167,6 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
         });
         mFab.setVisibility(View.INVISIBLE);
         mTitle.setText(getString(R.string.info_no_subject));
-
-        //initReader("CSE4058-02", 1);
-        //test_addSubject();
 
 
         qrCodeReaderView = (QRCodeReaderView) findViewById(R.id.qrdecoderview);
@@ -566,7 +562,7 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
                                                 .child(studentWifi.getStudentId())
                                                 .setValue(new AttendanceStatus(studentWifi.getStudentId(), Constants.ATTENDANCE_NONE));
                                     }
-                                    //TODO 학생에게 알려주기
+                                    //학생에게 알려주기
                                     AndroidPush.sendPushNotification(mSubject.getSubjectCode(),
                                             Constants.ATTENDANCE_RESULT,
                                             mWeeks,
@@ -713,7 +709,7 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
                     }).start();
 
 
-                    // TODO 현재 출석한 학생을 대상으로 푸쉬메세지를 전송한다.
+                    // 현재 출석한 학생을 대상으로 푸쉬메세지를 전송한다.
                     // 리스너를 통해 학생들이 들어왔는지 확인하고, 학생들이 보낸정보가 현재 와이파이와 일치하면 괜찮음.
                     // 아니면 출튀여부자로 보낸다.
 
@@ -772,15 +768,8 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
             final int N = mWifiResults.size();
 
             Log.d("#####","wifi load ended!!!");
-/*            Log.v("#####", "Wi-Fi Scan Results ... Count:" + N);
-            for (int i = 0; i < N; ++i) {
-                Log.v("#####", "  BSSID       =" + mWifiResults.get(i).BSSID);
-                Log.v("#####", "  SSID        =" + mWifiResults.get(i).SSID);
-                Log.v("#####", "  Capabilities=" + mWifiResults.get(i).capabilities);
-                Log.v("#####", "  Frequency   =" + mWifiResults.get(i).frequency);
-                Log.v("#####", "  Level       =" + mWifiResults.get(i).level);
-                Log.v("#####", "---------------");
-            }*/
+            Log.v("#####", "Wi-Fi Scan Results ... Count:" + N);
+
         }
 
 
