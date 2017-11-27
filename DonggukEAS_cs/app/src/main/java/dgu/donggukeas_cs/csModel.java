@@ -21,6 +21,14 @@ public class csModel {
         return result;
     }
 
+ /*   public Map<String, Object> clearMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("studentId",studentId);
+        result.put("deviceToken","-1");
+
+        return result;
+    }
+*/
     public String getStudentid() {
         return studentId;
     }

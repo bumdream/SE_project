@@ -25,11 +25,13 @@ import java.util.Map;
 public class csAdapter extends RecyclerView.Adapter<csAdapter.csViewHolder>{
 
     private List<csModel> list;
+    private List<csModel> dblist=new ArrayList<>();
     private List<String> idList = new ArrayList<>();
     private FirebaseDatabase database;
     private DatabaseReference stu_reference;
     private DatabaseReference reference;
     private DatabaseReference dev_reference;
+    private String stid;
 
 
     public csAdapter(List<csModel> list){
@@ -59,6 +61,7 @@ public class csAdapter extends RecyclerView.Adapter<csAdapter.csViewHolder>{
         TextView studentID, deviceTOKEN;
         Button btn_register;
 
+
         public csViewHolder(View itemView){
             super(itemView);
 
@@ -85,22 +88,68 @@ public class csAdapter extends RecyclerView.Adapter<csAdapter.csViewHolder>{
                                                             for (DataSnapshot child : dataSnapshot.getChildren()) {
                                                                 idList.add(child.getKey());
                                                             }
-
                                                             for (int j = 0; j < idList.size(); j++) {
                                                                 if (idList.get(j).equals(cs.studentId)) {
                                                                     control = true;
-                                                                    Toast.makeText( view.getContext(),"registered", Toast.LENGTH_SHORT).show();
-
                                                                     break;
                                                                 }
                                                             }
                                                             if (control) {
-                                                                newCS.put(cs.studentId, csValues);
-                                                                dev_reference.updateChildren(newCS);
-                                                                reference.child(cs.studentId).removeValue();
-                                                            } else {
-                                                                Toast.makeText( view.getContext(),"not exist", Toast.LENGTH_SHORT).show();
+                                                                dev_reference.orderByChild("studentId").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                    @Override
+                                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                        boolean control1=false;
+                                                                        dblist.clear();
+                                                                        int t=0;
+                                                                        for (DataSnapshot child : dataSnapshot.getChildren()) {
+                                                                            dblist.add(child.getValue(csModel.class));
+                                                                            t++;
+                                                                        }
+                                                                        for (int k = 0; k < dblist.size(); k++) {
+                                                                            if (dblist.get(k).getDeviceToken().equals(cs.deviceToken)) {
+                                                                                control1=true;
+                                                                                stid=dblist.get(k).studentId;
+                                                                                break;
+                                                                            }
+                                                                        }
+                                                                        if(control1){
+                                                                            Toast.makeText( view.getContext(),"등록되었습니다", Toast.LENGTH_SHORT).show();
+                                                                            Map<String, Object> csValues = cs.toMap();
+                                                                            newCS.put(cs.studentId, csValues);
+                                                                            dev_reference.updateChildren(newCS);
+
+                                                                            csModel cs1 = new csModel(stid,"-1");
+                                                                            Map<String, Object> csValues1 = cs1.toMap();
+                                                                            Map<String, Object> newCS1 = new HashMap<>();
+
+                                                                            newCS1.put(cs1.studentId, csValues1);
+                                                                            dev_reference.updateChildren(newCS1);
+
+
+                                                                            reference.child(cs.studentId).removeValue();
+                                                                        }
+                                                                        else{
+                                                                            Toast.makeText( view.getContext(),"등록되었습니다", Toast.LENGTH_SHORT).show();
+
+                                                                            newCS.put(cs.studentId, csValues);
+                                                                            dev_reference.updateChildren(newCS);
+                                                                            reference.child(cs.studentId).removeValue();
+                                                                        }
+                                                                        control1=false;
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                                    }
+                                                                });
+
                                                             }
+
+
+                                                            else {
+                                                            }
+
                                                             control = false;
                                                         }
 
