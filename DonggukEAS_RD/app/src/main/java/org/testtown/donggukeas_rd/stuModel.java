@@ -22,26 +22,35 @@ public class stuModel {
         this.name = name;
     }
 
+    //STUDENT_DEVICE DB에 저장할 양식
     public Map<String,Object> stu_dev_Map(){
         HashMap<String,Object> result = new HashMap<>();
         result.put("studentId",studentId);
         result.put("deviceToken",deviceToken);
         return result;
     }
+
+    //STUDENT_AUTH DB에 저장할 양식
     public Map<String,Object>  stu_auth_Map(){
         HashMap<String,Object> result = new HashMap<>();
         result.put("id",studentId);
         result.put("pw",pw);
         return result;
     }
+
+    //STUDENT_WIFI DB에 저장할 양식
     public Map<String,Object>  stu_wifi_Map(){
         HashMap<String,Object> result = new HashMap<>();
         result.put("studentId",studentId);
         result.put("wifiInfo",wifiInfo);
         return result;
     }
+
+    //STUDENT DB에 저장할 양식
     public Map<String,Object>  stu_Map(){
         HashMap<String,Object> result = new HashMap<>();
+
+        //STUDENT DB내의 SUBJECT에 들어갈 목록
         HashMap<String,Object> result1 = new HashMap<>();
         result1.put("0","CSE4058-02");
         result1.put("1","CSE2017-01");
@@ -51,12 +60,15 @@ public class stuModel {
         result.put("listenSubject",result1);
         return result;
     }
+
+    //STUDENT_ATTENDANCE DB에 저장할 양식
     public Map<String,Object>  stu_atd_Map(){
         HashMap<String,Object> result = new HashMap<>();
         result.put("studentId",studentId);
         result.put("attendanceStatus",attendanceStatus);
         return result;
     }
+
 
     public String getStudentId() {
         return studentId;
