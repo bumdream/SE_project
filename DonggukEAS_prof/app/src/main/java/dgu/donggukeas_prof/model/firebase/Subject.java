@@ -1,11 +1,13 @@
 package dgu.donggukeas_prof.model.firebase;
 
-import android.util.Log;
-
 import java.util.List;
 
 /**
  * Created by hanseungbeom on 2017. 11. 7..
+ *
+ * public class Subject
+ * 파이어베이스로부터 동기화할 강좌 정보
+
  */
 
 public class Subject {
@@ -13,6 +15,15 @@ public class Subject {
     String subjectName;
     List<String> listenStudent;
     String days;
+
+    public Subject()
+    {}
+
+    public Subject(String subjectName, String subjectCode) {
+        this.subjectName = subjectName;
+        this.subjectCode = subjectCode;
+        //Log.d("#####","subject생성");
+    }
 
     public List<String> getListenStudent() {
         return listenStudent;
@@ -28,18 +39,6 @@ public class Subject {
 
     public void setDays(String days) {
         this.days = days;
-    }
-
-    public Subject()
-    {
-        Log.d("#####","subject1");
-    }
-
-    public Subject(String subjectName, String subjectCode) {
-        this.subjectName = subjectName;
-        this.subjectCode = subjectCode;
-        Log.d("#####","subject생성");
-
     }
 
     public String getSubjectName() {

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -20,7 +19,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -29,7 +27,6 @@ import java.util.Map;
 
 import dgu.donggukeas_prof.R;
 import dgu.donggukeas_prof.adapter.AttendanceAdapter;
-import dgu.donggukeas_prof.adapter.SubjectAdapter;
 import dgu.donggukeas_prof.model.StudentInfo;
 import dgu.donggukeas_prof.model.firebase.AttendanceStatus;
 import dgu.donggukeas_prof.model.firebase.RunawayActive;
@@ -39,25 +36,26 @@ import dgu.donggukeas_prof.util.Constants;
 import dgu.donggukeas_prof.util.SemesterDate;
 
 public class AttendanceActivity extends AppCompatActivity {
-    private RecyclerView mAttendanceRecyclerView;
-    private SubjectAdapter mSubjectAdapter;
+    private int mSelectedWeek, mCurrentWeek;
+    private int mStartDay =0, mStartMonth =0;
+    private int mEndDay =0, endMonth=0;
+    private boolean mIsProgress = false;
+
+    private ImageButton ibLeft, ibRight;
     private TextView subjectCode, subjectName, subjectWeek, subjectWeekDays;
-    private FloatingActionButton fabQR, fabRA;
-    private FirebaseDatabase mDatabase;
-    private DatabaseReference mStudentReference,mDeviceReference,mAttendanceReference, mRunawayActiveReference;
+    private FloatingActionButton fabQR, fabRA; //둥근 메뉴 버튼
+
+    private Calendar mSemesterStart = null, mCurrentDate = null, mSemesterEnd = null;
+    private Calendar mWeekStartDay = null, mWeekEndDay = null;
+
+    private RecyclerView mAttendanceRecyclerView;
     private Subject mSubject;
     private ArrayList<StudentInfo> mStudents;
     private AttendanceAdapter mAdapter;
     private LinearLayout mProgressLayout;
-    private int currentWeek, mTodaysWeek;
-    private ImageButton ibLeft, ibRight;
-    private Calendar semesterStart = null, currentDate = null, semesterEnd = null;
-    private Calendar weekStartDay = null, weekEndDay = null;
-    private int startDay=0, startMonth=0;
-    private int endDay=0, endMonth=0;
-    private boolean isProgress = false;
-    //private boolean isRunawayButtonClicked = false;
 
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference mStudentReference, mAttendanceReference, mRunawayActiveReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +66,7 @@ public class AttendanceActivity extends AppCompatActivity {
         subjectCode.setText(getIntent().getStringExtra(getString(R.string.extra_subject_code)));
         subjectName = (TextView)findViewById(R.id.tv_a_subjectName);
         subjectName.setText(getIntent().getStringExtra(getString(R.string.extra_subject_name)));
-
+        //데이터베이스 참조
         mDatabase = FirebaseDatabase.getInstance();
         mStudentReference = mDatabase.getReference(getString(R.string.table_student));
         mAttendanceReference = mDatabase.getReference(getString(R.string.table_attendance));
@@ -83,166 +81,101 @@ public class AttendanceActivity extends AppCompatActivity {
         mAdapter = new AttendanceAdapter(this, mStudents, subjectCode.getText().toString());
         mAttendanceRecyclerView.setAdapter(mAdapter);
 
-        semesterStart = Calendar.getInstance();
-        semesterEnd = Calendar.getInstance();
-        weekStartDay = Calendar.getInstance();
-        weekEndDay = Calendar.getInstance();
+        mSemesterStart = Calendar.getInstance();
+        mSemesterEnd = Calendar.getInstance();
+        mWeekStartDay = Calendar.getInstance();
+        mWeekEndDay = Calendar.getInstance();
 
-        currentWeek = getWeek();
-        mTodaysWeek = currentWeek;
-        updateWeekInfo(currentWeek);
+        mSelectedWeek = getWeek();
+        mCurrentWeek = mSelectedWeek;
+        updateWeekInfo(mSelectedWeek);
 
-
-
+        //QR 코드 조회 (교수가 선택한 강의 관련 정보가 QR 코드로 생성)
         fabQR = (FloatingActionButton)findViewById(R.id.fab_qr);
         fabQR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Intent i = new Intent(getApplicationContext(), QrActivity.class);
                 i.putExtra("QRCODE",subjectCode.getText().toString());
-                Log.d("#####",subjectCode.getText().toString());
-
-
+                //Log.d("#####",subjectCode.getText().toString());
                 startActivity(i);
-
             }
         });
 
+        //출튀 체크 기능
         fabRA = (FloatingActionButton)findViewById(R.id.fab_runaway);
         fabRA.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // isRunawayButtonClicked = true;
-                isProgress = true;
-
                 final String mSubjectCode = subjectCode.getText().toString();
+                mIsProgress = true;
 
                 FirebaseDatabase mDatabase;
-                //DatabaseReference mRunawwayActiveReference;
-
                 mDatabase = FirebaseDatabase.getInstance();
-                mRunawayActiveReference = mDatabase.getReference("RUNAWAY_ACTIVE");
-
-
-
-
-                //mRunawwayActiveReference = mRunawwayActiveReference.child(mSubjectCode);
-
+                mRunawayActiveReference = mDatabase.getReference("RUNAWAY_ACTIVE"); //RUNAWAY_ACTIVE 테이블 참조
                 mRunawayActiveReference.child(mSubjectCode).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         RunawayActive ra = snapshot.getValue(RunawayActive.class);
+                        //출튀 기능은 리더기에서 현재 강의의 출석 체크가 종료되었을 때 수행 가능
                         if(ra.getIsActive() == Constants.SUBJECT_ATTENDANCE_END) {
                             //Toast.makeText(getApplicationContext(), "출석완료", Toast.LENGTH_LONG).show();
-                            RunawayActive mRunawayActive = new RunawayActive(Constants.SUBJECT_ATTENDANCE_RUNAWAY_ACTIVE);
+                            RunawayActive mRunawayActive = new RunawayActive(Constants.SUBJECT_ATTENDANCE_RUNAWAY_ACTIVE); //리더기에게 출튀 관련 액션을 요청
 
                             Map<String, Object> mRunawayValue = mRunawayActive.toMap();
                             Map<String, Object> mNewRunaway = new HashMap<>();
-
                             mNewRunaway.put(mSubjectCode,mRunawayValue);
                             mRunawayActiveReference.updateChildren(mNewRunaway);
 
                             mProgressLayout = (LinearLayout)findViewById(R.id.ll_pb);
                             mProgressLayout.setVisibility(View.VISIBLE);
 
-////////////////
                             mRunawayActiveReference.child(mSubjectCode).addChildEventListener(new ChildEventListener() {
                                 @Override
-                                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-                                }
+                                public void onChildAdded(DataSnapshot dataSnapshot, String s) {}
 
                                 @Override
                                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                                     int value = dataSnapshot.getValue(Integer.class);
                                     if(value == Constants.SUBJECT_ATTENDANCE_RUNAWAY_END){
-                                        isProgress = false;
-
+                                        mIsProgress = false;
                                         mProgressLayout.setVisibility(View.INVISIBLE);
 
                                         Intent i = new Intent(getApplicationContext(), RunawayActivity.class);
-
                                         i.putExtra(getString(R.string.extra_ra_subject_code),subjectCode.getText().toString());
-                                        i.putExtra(getString(R.string.extra_ra_subject_week),mTodaysWeek);
-
-                                        //Log.d("#####",subjectCode.getText().toString());
-
-                                       // isRunawayButtonClicked = false;
-
-
-
+                                        i.putExtra(getString(R.string.extra_ra_subject_week), mCurrentWeek);
                                         startActivity(i);
                                     }
-                                    Log.d("#####", "value:" + value);
-
-
-
+                                    //Log.d("#####", "value:" + value);
                                 }
-
-                                @Override
-                                public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                                }
-
-                                @Override
-                                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                }
+                                public void onChildRemoved(DataSnapshot dataSnapshot) {}
+                                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+                                public void onCancelled(DatabaseError databaseError) {}
                             });
-
-
-
                         }else
                              Toast.makeText(getApplicationContext(),"출석이 아직 종료되지 않았습니다.\n잠시 후 다시 시도하세요.",Toast.LENGTH_LONG).show();
-
                     }
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
+                    public void onCancelled(DatabaseError databaseError) {}
                 });
-
-
-
-           /*여기 주석
-
-
-
-
-*/
-
-
-
-
             }
         });
 
-        //currentWeek = getWeek();
-        //updateWeekInfo(currentWeek);
-
-        //mAdapter.setWeek(currentWeek);
-
         subjectWeek = (TextView)findViewById(R.id.tv_a_week);
-        subjectWeek.setText(currentWeek+"주차");
+        subjectWeek.setText(mSelectedWeek +"주차");
         subjectWeekDays = (TextView)findViewById(R.id.tv_weekdays);
-        subjectWeekDays.setText(startMonth+"/"+startDay+" ~ "+endMonth+"/"+endDay);
+        subjectWeekDays.setText(mStartMonth +"/"+ mStartDay +" ~ "+endMonth+"/"+ mEndDay);
 
+        //출석을 조회하고자하는 주차를 변경 가능한 버튼
         ibLeft = (ImageButton)findViewById(R.id.ib_a_left);
         ibRight = (ImageButton)findViewById(R.id.ib_a_right) ;
 
-
-
-        if(currentWeek == 1) {
+        //주차에 따라 버튼 활성화 여부 결정
+        if(mSelectedWeek == 1) {
             ibLeft.setClickable(false);
             ibLeft.setImageResource(R.drawable.ic_left_disabled);
         }
-        else if(currentWeek == 16) {
+        else if(mSelectedWeek == SemesterDate.SEMESTER_MAX_WEEKS) {
             ibRight.setClickable(false);
             ibRight.setImageResource(R.drawable.ic_right_disabled);
         }
@@ -256,21 +189,18 @@ public class AttendanceActivity extends AppCompatActivity {
         ibLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                currentWeek--;
-                weekStartDay.add(Calendar.DAY_OF_YEAR, -7);
-                updateWeekInfo(currentWeek);
-                //mAdapter.setWeek(currentWeek);
+                mSelectedWeek--;
+                mWeekStartDay.add(Calendar.DAY_OF_YEAR, -7);
+                updateWeekInfo(mSelectedWeek);
 
-                subjectWeek.setText(currentWeek+"주차");
-                subjectWeekDays.setText(startMonth+"-"+startDay+" ~ "+endMonth+"-"+endDay);
+                subjectWeek.setText(mSelectedWeek +"주차");
+                subjectWeekDays.setText(mStartMonth +"-"+ mStartDay +" ~ "+endMonth+"-"+ mEndDay);
 
-                if(currentWeek == 1)
-                {
+                if(mSelectedWeek == 1) {
                     ibLeft.setImageResource(R.drawable.ic_left_disabled);
                     ibLeft.setClickable(false);
                 }
-                else
-                {
+                else {
                     ibLeft.setImageResource(R.drawable.ic_left);
                     ibRight.setImageResource(R.drawable.ic_right);
                     ibLeft.setClickable(true);
@@ -282,28 +212,25 @@ public class AttendanceActivity extends AppCompatActivity {
                 mAdapter = new AttendanceAdapter(AttendanceActivity.this, mStudents, subjectCode.getText().toString());
                 mAttendanceRecyclerView.setAdapter(mAdapter);
 
-                updateStudentList(subjectCode.getText().toString(), currentWeek);
+                updateStudentList(subjectCode.getText().toString(), mSelectedWeek);
             }
         });
 
         ibRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                currentWeek++;
-                weekStartDay.add(Calendar.DAY_OF_YEAR, 7);
-                updateWeekInfo(currentWeek);
-                //mAdapter.setWeek(currentWeek);
+                mSelectedWeek++;
+                mWeekStartDay.add(Calendar.DAY_OF_YEAR, 7);
+                updateWeekInfo(mSelectedWeek);
 
-                subjectWeek.setText(currentWeek+"주차");
-                subjectWeekDays.setText(startMonth+"-"+startDay+" ~ "+endMonth+"-"+endDay);
+                subjectWeek.setText(mSelectedWeek +"주차");
+                subjectWeekDays.setText(mStartMonth +"-"+ mStartDay +" ~ "+endMonth+"-"+ mEndDay);
 
-                if(currentWeek == 16)
-                {
+                if(mSelectedWeek == SemesterDate.SEMESTER_MAX_WEEKS) {
                     ibRight.setImageResource(R.drawable.ic_right_disabled);
                     ibRight.setClickable(false);
                 }
-                else
-                {
+                else {
                     ibLeft.setImageResource(R.drawable.ic_left);
                     ibRight.setImageResource(R.drawable.ic_right);
                     ibLeft.setClickable(true);
@@ -314,153 +241,98 @@ public class AttendanceActivity extends AppCompatActivity {
                 mStudents = new ArrayList<>();
                 mAdapter = new AttendanceAdapter(AttendanceActivity.this, mStudents, subjectCode.getText().toString());
                 mAttendanceRecyclerView.setAdapter(mAdapter);
-                updateStudentList(subjectCode.getText().toString(), currentWeek);
+
+                updateStudentList(subjectCode.getText().toString(), mSelectedWeek);
             }
         });
-
-        updateStudentList(subjectCode.getText().toString(), currentWeek);
-
+        updateStudentList(subjectCode.getText().toString(), mSelectedWeek);
     }
 
     @Override
     public void onBackPressed() {
-        if(isProgress == true)
-        {}
+        if(mIsProgress == true)
+        {
+            //출튀 체크 중이면 뒤로가기 비활성화
+        }
         else {
             super.onBackPressed();
         }
     }
 
-
+    //현재 날짜가 학기 시작 몇 주차인지 계산하는 메소드
     public int getWeek()
     {
-       // semesterStart = Calendar.getInstance();
-        //semesterStart.set(Calendar.YEAR,  2017);
-        //semesterStart.set(Calendar.MONTH,  Calendar.AUGUST);
-        //semesterStart.set(Calendar.DATE,  28);
+        int startDate, todayDate, weekNo;
+        mSemesterStart.set(Calendar.YEAR, SemesterDate.SEMESTER_START_YEAR);
+        mSemesterStart.set(Calendar.MONTH, SemesterDate.SEMESTER_START_MONTH);
+        mSemesterStart.set(Calendar.DATE, SemesterDate.SEMESTER_START_DATE);
 
-        semesterStart.set(Calendar.YEAR, SemesterDate.SEMESTER_START_YEAR);
-        semesterStart.set(Calendar.MONTH, SemesterDate.SEMESTER_START_MONTH);
-        semesterStart.set(Calendar.DATE, SemesterDate.SEMESTER_START_DATE);
+        startDate = mSemesterStart.get(Calendar.DAY_OF_YEAR);
+        mCurrentDate = Calendar.getInstance();
+        todayDate = mCurrentDate.get(Calendar.DAY_OF_YEAR);
 
-        int startDate = semesterStart.get(Calendar.DAY_OF_YEAR);
-        Log.d("###","startDate : "+startDate);
+        mSemesterEnd.set(Calendar.YEAR, SemesterDate.SEMESTER_END_YEAR);
+        mSemesterEnd.set(Calendar.MONTH, SemesterDate.SEMESTER_END_MONTH);
+        mSemesterEnd.set(Calendar.DATE, SemesterDate.SEMESTER_END_DATE);
 
-        currentDate = Calendar.getInstance();
-        int todayDate = currentDate.get(Calendar.DAY_OF_YEAR);
-        Log.d("###","todayDate : "+todayDate);
+        weekNo = (todayDate-startDate)/7 + 1;
 
-      //  semesterEnd = Calendar.getInstance();
-      //  semesterEnd.set(Calendar.YEAR,  2017);
-      //  semesterEnd.set(Calendar.MONTH,  Calendar.DECEMBER);
-      //  semesterEnd.set(Calendar.DATE,  18);
-
-        semesterEnd.set(Calendar.YEAR, SemesterDate.SEMESTER_END_YEAR);
-        semesterEnd.set(Calendar.MONTH, SemesterDate.SEMESTER_END_MONTH);
-        semesterEnd.set(Calendar.DATE, SemesterDate.SEMESTER_END_DATE);
-
-//        int endDate = semesterEnd.get(Calendar.DAY_OF_YEAR);
-
-        int weekNo = (todayDate-startDate)/7 + 1;
-
-      /*  weekStartDay.set(Calendar.YEAR, semesterStart.get(Calendar.YEAR));
-        weekStartDay.set(Calendar.MONTH, semesterStart.get(Calendar.MONTH));
-        weekStartDay.set(Calendar.DATE, semesterStart.get(Calendar.DATE));
-        weekStartDay.add(Calendar.DAY_OF_YEAR,(weekNo-1)*7);
-
-
-       // int wstartDay = weekStartDay.get(Calendar.DATE);
-        //int wstartMonth = weekStartDay.get(Calendar.MONTH)+1;
-
-       // Toast.makeText(getApplicationContext(),wstartMonth+"/"+wstartDay+"\n"+"왜안돼",Toast.LENGTH_LONG).show();
-
-        if(weekNo>16) {
-            weekEndDay.set(Calendar.YEAR, semesterEnd.get(Calendar.YEAR));
-            weekEndDay.set(Calendar.MONTH, semesterEnd.get(Calendar.MONTH));
-            weekEndDay.set(Calendar.DATE, semesterEnd.get(Calendar.DATE));
-        }
-        else {
-            weekEndDay.set(Calendar.YEAR, weekStartDay.get(Calendar.YEAR));
-            weekEndDay.set(Calendar.MONTH, weekStartDay.get(Calendar.MONTH));
-            weekEndDay.set(Calendar.DATE, weekStartDay.get(Calendar.DATE));
-            weekEndDay.add(Calendar.DAY_OF_YEAR, 6);
-        }
-        */
-      //Toast.makeText(getApplicationContext(),"오늘은 개강일로부터 "+(todayDate-startDate)+"일 경과\n현재 "+weekNo+"주차",Toast.LENGTH_LONG).show();
-
-
-        if(weekNo>16)
-            return 16;
+        if(weekNo>SemesterDate.SEMESTER_MAX_WEEKS) //학기는 최대 16주차
+            return SemesterDate.SEMESTER_MAX_WEEKS;
         else
             return weekNo;
     }
 
+    //현재 주차의 시작 날짜와 마지막 날짜를 계산하는 메소드
     public void updateWeekInfo(int currentWeek)
     {
-        weekStartDay.set(Calendar.YEAR, semesterStart.get(Calendar.YEAR));
-        weekStartDay.set(Calendar.MONTH, semesterStart.get(Calendar.MONTH));
-        weekStartDay.set(Calendar.DATE, semesterStart.get(Calendar.DATE));
-        weekStartDay.add(Calendar.DAY_OF_YEAR,(currentWeek-1)*7);
+        mWeekStartDay.set(Calendar.YEAR, mSemesterStart.get(Calendar.YEAR));
+        mWeekStartDay.set(Calendar.MONTH, mSemesterStart.get(Calendar.MONTH));
+        mWeekStartDay.set(Calendar.DATE, mSemesterStart.get(Calendar.DATE));
+        mWeekStartDay.add(Calendar.DAY_OF_YEAR,(currentWeek-1)*7);
 
-
-        // int wstartDay = weekStartDay.get(Calendar.DATE);
-        //int wstartMonth = weekStartDay.get(Calendar.MONTH)+1;
-
-        // Toast.makeText(getApplicationContext(),wstartMonth+"/"+wstartDay+"\n"+"왜안돼",Toast.LENGTH_LONG).show();
-
-        if(currentWeek>=16) {
-            weekEndDay.set(Calendar.YEAR, semesterEnd.get(Calendar.YEAR));
-            weekEndDay.set(Calendar.MONTH, semesterEnd.get(Calendar.MONTH));
-            weekEndDay.set(Calendar.DATE, semesterEnd.get(Calendar.DATE));
+        if(currentWeek>=SemesterDate.SEMESTER_MAX_WEEKS) {
+            mWeekEndDay.set(Calendar.YEAR, mSemesterEnd.get(Calendar.YEAR));
+            mWeekEndDay.set(Calendar.MONTH, mSemesterEnd.get(Calendar.MONTH));
+            mWeekEndDay.set(Calendar.DATE, mSemesterEnd.get(Calendar.DATE));
         }
         else {
-            weekEndDay.set(Calendar.YEAR, weekStartDay.get(Calendar.YEAR));
-            weekEndDay.set(Calendar.MONTH, weekStartDay.get(Calendar.MONTH));
-            weekEndDay.set(Calendar.DATE, weekStartDay.get(Calendar.DATE));
-            weekEndDay.add(Calendar.DAY_OF_YEAR, 6);
+            mWeekEndDay.set(Calendar.YEAR, mWeekStartDay.get(Calendar.YEAR));
+            mWeekEndDay.set(Calendar.MONTH, mWeekStartDay.get(Calendar.MONTH));
+            mWeekEndDay.set(Calendar.DATE, mWeekStartDay.get(Calendar.DATE));
+            mWeekEndDay.add(Calendar.DAY_OF_YEAR, 6);
         }
 
-        startDay = weekStartDay.get(Calendar.DATE);
-        startMonth = weekStartDay.get(Calendar.MONTH)+1;
-        endDay = weekEndDay.get(Calendar.DATE);
-        endMonth = weekEndDay.get(Calendar.MONTH)+1;
-
-        //Toast.makeText(getApplicationContext(),startMonth+"/"+startDay+"\n"+endMonth+"/"+endDay,Toast.LENGTH_LONG).show();
-
+        mStartDay = mWeekStartDay.get(Calendar.DATE);
+        mStartMonth = mWeekStartDay.get(Calendar.MONTH)+1;
+        mEndDay = mWeekEndDay.get(Calendar.DATE);
+        endMonth = mWeekEndDay.get(Calendar.MONTH)+1;
     }
 
-
+    //데이터베이스로부터 읽어들인 학생들의 목록을 갱신하는 메소드
     public void updateStudentList(final String subjectCode,final int week)
     {
         DatabaseReference reference = mDatabase.getReference(getString(R.string.table_subject));
         mAttendanceReference = mAttendanceReference.child(subjectCode).child(String.valueOf(week));
         mAdapter.setWeek(week);
 
-        //해당 과목 subjectCode 로 mSubject(전연변수) 동기화
-
+        //해당 과목 subjectCode 로 mSubject(전역변수) 동기화
         reference.child(subjectCode).addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-
                         mSubject = dataSnapshot.getValue(Subject.class);
-                        //setTitle(mSubject.getSubjectName()+"["+mSubject.getSubjectCode()+"] - "+week+"주차");
-                        //Log.d("#####",mSubject.getSubjectCode()+mSubject.getSubjectName());
-
-
 
                         //현재 subjectCode 에 해당하는 학생 mStudents(전역변수) 리스트에 추가
                         List<String> studentsId = mSubject.getListenStudent();
 
-
+                        //student 테이블과 subject 테이블을 내부적으로 JOIN 하기 위해 StudentInfo 클래스 사용
                         for(int i=0;i<studentsId.size();i++) {
                             mStudents.add(new dgu.donggukeas_prof.model.StudentInfo(studentsId.get(i)));
                         }
-
                         mAdapter.notifyDataSetChanged();
-                        //student 테이블로부터 조인.
 
-                        //학생 이름을 학번으로 부터 불러온다
+                        //학번과 일치하는 학생 이름을 데이터베이스에서 검색 후 StudentInfo에 추가
                         mStudentReference.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot snapshot) {
@@ -479,55 +351,38 @@ public class AttendanceActivity extends AppCompatActivity {
                                 }
                             }
                             @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
+                            public void onCancelled(DatabaseError databaseError) {}
                         });
 
+                        //학생의 출석 기록을 참조
                         mAttendanceReference.addChildEventListener(new ChildEventListener() {
                             @Override
                             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                                AttendanceStatus as = dataSnapshot.getValue(AttendanceStatus.class);
-                                int index = getStudentIndex(as.getStudentId());
+                                AttendanceStatus aStatus = dataSnapshot.getValue(AttendanceStatus.class);
+                                int index = getStudentIndex(aStatus.getStudentId());
                                 if(index!=-1){
-                                    mStudents.get(index).setAttendanceStatus(as.getAttendanceStatus());
+                                    mStudents.get(index).setAttendanceStatus(aStatus.getAttendanceStatus());
                                     mAdapter.notifyItemChanged(index);
                                 }
-                                //Log.d("#####","attendance:"+dataSnapshot.getKey());
                             }
 
-                            @Override
                             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                                AttendanceStatus as = dataSnapshot.getValue(AttendanceStatus.class);
-                                int index = getStudentIndex(as.getStudentId());
+                                AttendanceStatus aStatus = dataSnapshot.getValue(AttendanceStatus.class);
+                                int index = getStudentIndex(aStatus.getStudentId());
                                 if(index!=-1){
-                                    mStudents.get(index).setAttendanceStatus(as.getAttendanceStatus());
+                                    mStudents.get(index).setAttendanceStatus(aStatus.getAttendanceStatus());
                                     mAdapter.notifyItemChanged(index);
                                 }
                             }
 
-                            @Override
-                            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                            }
-
-                            @Override
-                            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-                            }
+                            public void onChildRemoved(DataSnapshot dataSnapshot) {}
+                            public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+                            public void onCancelled(DatabaseError databaseError) {}
                         });
-
                     }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
+                    public void onCancelled(DatabaseError databaseError) {}
                 });
     }
-
-
     public int getStudentIndex(String studentId){
         int index = -1;
         for (int i = 0; i < mStudents.size(); i++) {
@@ -538,15 +393,4 @@ public class AttendanceActivity extends AppCompatActivity {
         }
         return index;
     }
-
-    public static String getDateFromMilli(Long milli){
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(milli);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/HH/mm/ss");
-        return new String(sdf.format(calendar.getTime()));
-    }
-
-
 }
-
-

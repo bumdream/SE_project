@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +28,6 @@ import static dgu.donggukeas_prof.R.color.Grey900;
 
 /**
  * Created by francisbae on 2017-11-17.
- *
  */
 
 public class AttendanceAdapter extends RecyclerView.Adapter<AttendanceAdapter.AttendanceViewHolder> {
@@ -43,8 +41,7 @@ public class AttendanceAdapter extends RecyclerView.Adapter<AttendanceAdapter.At
         students = result;
         mSubjectCode = subjectCode;
     }
-    private AlertDialog mMenuDialog;
-
+    private AlertDialog mMenuDialog; //교수가 출결을 직접 수정 가능하도록 함
 
     @Override
     public AttendanceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -57,11 +54,9 @@ public class AttendanceAdapter extends RecyclerView.Adapter<AttendanceAdapter.At
         StudentInfo studentInfo = students.get(position);
         holder.studentId.setText(studentInfo.getStudentId());
         holder.studentName.setText(studentInfo.getStudentName());
-
         holder.curWeek = mCurrentWeek;
 
-        Log.d("#####", "curWeek : "+holder.curWeek+" / mCurrentWeek : "+mCurrentWeek);
-
+        //학생의 출결 상황에 따라 아이템을 다르게 표시
         switch(studentInfo.getAttendanceStatus()){
             case Constants.ATTENDANCE_OK://출석
                 holder.attendance.setImageResource(R.drawable.ic_check);
@@ -122,25 +117,19 @@ public class AttendanceAdapter extends RecyclerView.Adapter<AttendanceAdapter.At
         return students.size();
     }
 
-    public void swapData(){
-
-    }
-    public void setWeek(int curWeek)
-    {
+    public void setWeek(int curWeek) {
         mCurrentWeek = curWeek;
-        Log.d("#####","현재 : "+curWeek+"주");
+        //Log.d("#####","현재 : "+curWeek+"주");
     }
 
     public class AttendanceViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        int attendanceStat;
+        int curWeek;
         TextView studentId;
         TextView studentName;
         ImageView attendance;
         LinearLayout attendanceBackground;
-        //
         LinearLayout attendanceInfo;
-        int attendanceStat;
-        int curWeek;
-        //
 
         public AttendanceViewHolder(final View itemView){
             super(itemView);
@@ -148,46 +137,29 @@ public class AttendanceAdapter extends RecyclerView.Adapter<AttendanceAdapter.At
             studentName = (TextView)itemView.findViewById(R.id.tv_student_name);
             attendance = (ImageView) itemView.findViewById(R.id.iv_attendance);
             attendanceBackground = (LinearLayout)itemView.findViewById(R.id.ll_bg);
-            //
             attendanceInfo = (LinearLayout)itemView.findViewById(R.id.ll_infobg);
 
-           attendanceBackground.setOnClickListener(new View.OnClickListener() {
+            attendanceBackground.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    changeAttendanceStatus();
+                    changeAttendanceStatus(); //학생의 출결 상황 변경 메뉴 팝업
                 }
             });
-
-
-
         }
 
         public void changeAttendanceStatus(){
             CharSequence[] mItems = {"미처리","출석","결석","지각","출튀"};
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
-            if(attendanceBackground.getTag().toString().equals("tag_ok"))
-            {
-                attendanceStat = Constants.ATTENDANCE_OK;
-            }
-            else if(attendanceBackground.getTag().toString().equals("tag_absence"))
-            {
-                attendanceStat = Constants.ATTENDANCE_ABSENCE;
-            }
-            else if(attendanceBackground.getTag().toString().equals("tag_late"))
-            {
-                attendanceStat = Constants.ATTENDANCE_LATE;
-            }
-            else if(attendanceBackground.getTag().toString().equals("tag_run"))
-            {
-                attendanceStat = Constants.ATTENDANCE_RUN;
-            }
-            else {
-                attendanceStat = Constants.ATTENDANCE_NONE;
-            }
+            if(attendanceBackground.getTag().toString().equals("tag_ok")) { attendanceStat = Constants.ATTENDANCE_OK; }
+            else if(attendanceBackground.getTag().toString().equals("tag_absence")) { attendanceStat = Constants.ATTENDANCE_ABSENCE; }
+            else if(attendanceBackground.getTag().toString().equals("tag_late")) { attendanceStat = Constants.ATTENDANCE_LATE; }
+            else if(attendanceBackground.getTag().toString().equals("tag_run")) { attendanceStat = Constants.ATTENDANCE_RUN; }
+            else { attendanceStat = Constants.ATTENDANCE_NONE; }
 
             builder.setTitle(studentId.getText()+" "+studentName.getText());
 
+            //항목이 선택되면 학생의 출결 상황에 반영
             builder.setSingleChoiceItems(mItems, attendanceStat, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int item) {
                     FirebaseDatabase mDatabase;
@@ -196,10 +168,6 @@ public class AttendanceAdapter extends RecyclerView.Adapter<AttendanceAdapter.At
                     mDatabase = FirebaseDatabase.getInstance();
                     mAttendanceReference = mDatabase.getReference("STUDENT_ATTENDANCE");
 
-
-                    //mContext.getResources().getLayout()
-                    Log.d("#####","업데이트된 주는 "+curWeek);
-
                     mAttendanceReference = mAttendanceReference.child(mSubjectCode).child(curWeek+"");
 
                     int idx = getStudentIndex(studentId.getText().toString());
@@ -207,40 +175,14 @@ public class AttendanceAdapter extends RecyclerView.Adapter<AttendanceAdapter.At
 
                     Map<String, Object> mAttendanceValues = mAttendanceStatus.toMap();
                     Map<String, Object> mNewAttendance = new HashMap<>();
-
                     mNewAttendance.put(mAttendanceStatus.getStudentId(), mAttendanceValues);
                     mAttendanceReference.updateChildren(mNewAttendance);
 
-
-
-                    //reference.updateChildren(newUser);
-/*
-                    Log.d("#####",idx+"");
-
-                    switch(item)
-                    {
-                        case 0:
-                            Toast.makeText(mContext, "First Item Clicked", Toast.LENGTH_LONG).show();
-                            break;
-                        case 1:
-                            Toast.makeText(mContext, "Second Item Clicked", Toast.LENGTH_LONG).show();
-                            break;
-                        case 2:
-                            Toast.makeText(mContext, "Third Item Clicked", Toast.LENGTH_LONG).show();
-                            break;
-                        case 3:
-                            Toast.makeText(mContext, "First Item Clicked", Toast.LENGTH_LONG).show();
-                            break;
-                        case 4:
-                            Toast.makeText(mContext, "Second Item Clicked", Toast.LENGTH_LONG).show();
-                            break;
-                    }*/
                     mMenuDialog.dismiss();
                 }
             });
             mMenuDialog = builder.create();
             mMenuDialog.show();
-
         }
 
         public int getStudentIndex(String studentId){
@@ -253,11 +195,7 @@ public class AttendanceAdapter extends RecyclerView.Adapter<AttendanceAdapter.At
             }
             return index;
         }
-
-
         @Override
-        public void onClick(View v) {
-
-        }
+        public void onClick(View v) {}
     }
 }

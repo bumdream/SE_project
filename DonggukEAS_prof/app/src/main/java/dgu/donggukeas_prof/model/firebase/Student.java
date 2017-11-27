@@ -4,6 +4,9 @@ import java.util.List;
 
 /**
  * Created by hanseungbeom on 2017. 11. 5..
+ *
+ * public class Student
+ * 파이어베이스로부터 동기화할 학생 정보
  */
 
 public class Student {

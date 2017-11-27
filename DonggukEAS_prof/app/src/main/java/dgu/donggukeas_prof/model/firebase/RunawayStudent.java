@@ -1,18 +1,19 @@
 package dgu.donggukeas_prof.model.firebase;
 
-import android.util.Log;
-
 /**
- * Created by qowhd on 2017-11-23.
+ * Created by francisbae on 2017-11-23.
+ *
+ * public class RunawayStudent
+ * 파이어베이스로부터 동기화할 출튀 예상 학생 정보
+
  */
 
 public class RunawayStudent {
     private String studentId;
     private String updatedTime;
 
-    public RunawayStudent()
-    {
-        Log.d("#####","Runaway");
+    public RunawayStudent() {
+        //Log.d("#####","Runaway");
     }
 
     public RunawayStudent(String studentId) {

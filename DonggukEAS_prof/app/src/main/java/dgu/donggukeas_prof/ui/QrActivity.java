@@ -3,7 +3,6 @@ package dgu.donggukeas_prof.ui;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -22,13 +21,13 @@ public class QrActivity extends AppCompatActivity {
     public final static int BLACK = 0xFF000000;
     public final static int WIDTH = 250;
     public final static int HEIGHT = 250;
-    @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qr);
 
         mQRString = (getIntent().getStringExtra("QRCODE"));
-        Log.d("#####",mQRString);
+        //Log.d("#####",mQRString);
         mQRImg = (ImageView)findViewById(R.id.qr_img);
         try {
             mQRImg.setImageBitmap(encodeAsBitmap(mQRString.toString()));
@@ -44,7 +43,7 @@ public class QrActivity extends AppCompatActivity {
         });
     }
 
-
+    //QR 코드를 비트맵 형태로 생성하는 메소드
     Bitmap encodeAsBitmap(String str) throws WriterException {
         BitMatrix result;
         try {

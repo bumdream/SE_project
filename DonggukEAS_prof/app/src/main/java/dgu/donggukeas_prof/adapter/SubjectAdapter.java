@@ -8,7 +8,6 @@ package dgu.donggukeas_prof.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +20,15 @@ import dgu.donggukeas_prof.R;
 import dgu.donggukeas_prof.model.SubjectInfo;
 import dgu.donggukeas_prof.ui.AttendanceActivity;
 
-
 public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectViewHolder> {
+    private int subjectColors[] = {
+        R.color.material_teal,
+        R.color.material_pink,
+        R.color.material_amber,
+        R.color.material_indigo,
+        R.color.material_depp_orange,
+        R.color.material_deep_purple
+    };
 
     private Context mContext;
     private ArrayList<SubjectInfo> mSubjects;
@@ -40,21 +46,15 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectV
     @Override
     public void onBindViewHolder(SubjectViewHolder holder, int position) {
         SubjectInfo subject = mSubjects.get(position);
-
         holder.subjectName.setText(subject.getSubjectName());
         holder.subjectCode.setText(subject.getSubjectCode());
         holder.subjectNumOfStudents.setText(subject.getNumOfStudents()+"명");
+        holder.subjectColor.setBackgroundResource(subjectColors[position%6]); //강좌별로 다른 색깔 출력
     }
 
     @Override
     public int getItemCount() {
-        Log.d("#####","getItemCount 호출"); //이거 문제인듯
-
         return mSubjects.size();
-    }
-
-    public void swapData(){
-
     }
 
     public class SubjectViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -62,11 +62,12 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectV
         TextView subjectName;
         TextView subjectNumOfStudents;
         LinearLayout layout;
-
+        LinearLayout subjectColor;
 
         public SubjectViewHolder(View itemView){
             super(itemView);
             layout = (LinearLayout)itemView.findViewById(R.id.layout_subject);
+            subjectColor = (LinearLayout)itemView.findViewById(R.id.ll_subjectColor);
             subjectCode = (TextView)itemView.findViewById(R.id.tv_subject_code);
             subjectName = (TextView)itemView.findViewById(R.id.tv_subject_name);
             subjectNumOfStudents = (TextView)itemView.findViewById(R.id.tv_subject_numOfStudents);
@@ -74,41 +75,18 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectV
             layout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                   /* TextView subject = (TextView)v.findViewById(R.id.tv_subject_code);
-                    Log.d("#####",subject.getText().toString());
-
-                    Intent i = new Intent(mContext, AttendanceActivity.class);
-                    i.putExtra(mContext.getString(R.string.extra_subject_code),subject.getText().toString());
-                    //Toast.makeText(mContext,subject.getText().toString(), Toast.LENGTH_SHORT).show();
-                    mContext.startActivity(i);*/
                     TextView tv_sc = (TextView)v.findViewById(R.id.tv_subject_code);
                     TextView tv_sn = (TextView)v.findViewById(R.id.tv_subject_name);
-                    Log.d("#####",tv_sc.getText().toString());
+                    //Log.d("#####",tv_sc.getText().toString());
 
                     Intent i = new Intent(mContext, AttendanceActivity.class);
                     i.putExtra(mContext.getString(R.string.extra_subject_code),tv_sc.getText().toString());
                     i.putExtra(mContext.getString(R.string.extra_subject_name),tv_sn.getText().toString());
-
-                    //Toast.makeText(mContext,subject.getText().toString(), Toast.LENGTH_SHORT).show();
                     mContext.startActivity(i);
                 }
             });
         }
-
         @Override
-        public void onClick(View v) {
-            /*TextView tv_sc = (TextView)v.findViewById(R.id.tv_subject_code);
-            TextView tv_sn = (TextView)v.findViewById(R.id.tv_subject_name);
-            Log.d("#####",tv_sc.getText().toString());
-
-            Intent i = new Intent(mContext, AttendanceActivity.class);
-            i.putExtra(mContext.getString(R.string.extra_subject_code),tv_sc.getText().toString());
-            i.putExtra(mContext.getString(R.string.extra_subject_name),tv_sn.getText().toString());
-
-            //Toast.makeText(mContext,subject.getText().toString(), Toast.LENGTH_SHORT).show();
-            mContext.startActivity(i);
-*/
-        }
-
+        public void onClick(View v) {}
     }
 }

@@ -2,6 +2,10 @@ package dgu.donggukeas_prof.model;
 
 /**
  * Created by francisbae on 2017-11-17.
+
+ * public class SubjectInfo
+ * 교수가 가르치는 강좌와 그 학생수를 멤버로 가지는 클래스
+ * SUBJECT 테이블과 STUDENT 테이블을 조인하여 검색 후 값을 저장
  */
 
 public class SubjectInfo {

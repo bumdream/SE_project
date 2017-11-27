@@ -3,7 +3,10 @@ package dgu.donggukeas_prof.model.firebase;
 import java.util.List;
 
 /**
- * Created by qowhd on 2017. 11. 16..
+ * Created by francisbae on 2017. 11. 16..
+ *
+ * public class Professor
+ * 파이어베이스로부터 동기화할 교수 정보
  */
 
 public class Professor {
@@ -11,13 +14,10 @@ public class Professor {
     private String professorName;
     private List<String> lectureSubject;
 
-    //private String wifiInfo;
-
+    public Professor() {
+    }
     public Professor(String professorId) {
         this.professorId = professorId;
-    }
-
-    public Professor() {
     }
 
     public String getProfessorId() {

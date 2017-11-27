@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by qowhd on 2017-11-23.
+ * Created by francisbae on 2017-11-23.
+ *
+ * public class RunawayActive
+ * 파이어베이스로부터 동기화할 출튀 액션 상태 정보
  */
 
 public class RunawayActive {
