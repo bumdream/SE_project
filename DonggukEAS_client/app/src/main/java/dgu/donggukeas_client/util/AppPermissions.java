@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityCompat;
 
 public class AppPermissions {
     public static final String[] APP_PERMISSION = {
+            Manifest.permission.GET_TASKS,
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_WIFI_STATE,
             Manifest.permission.ACCESS_NETWORK_STATE,

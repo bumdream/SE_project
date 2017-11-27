@@ -157,4 +157,8 @@ public class SendWifiActivity extends AppCompatActivity {
         mToast.show();
     }
 
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+    }
 }

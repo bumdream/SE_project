@@ -60,6 +60,7 @@ public class MyFirebaseMessageService extends FirebaseMessagingService{
                 if(isNotiType!=Constants.ATTENDANCE_RESULT){
                     //와이파이 전송 액티비티로
                     Intent intent = new Intent(this, SendWifiActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     intent.putExtra("studentId", remoteMessage.getData().get("studentId"));
                     intent.putExtra("subjectCode", remoteMessage.getData().get("subjectCode"));
@@ -69,6 +70,8 @@ public class MyFirebaseMessageService extends FirebaseMessagingService{
                 }
                 else{
                     Intent intent = new Intent(this, ResultActivity.class);
+
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     intent.putExtra("studentId", remoteMessage.getData().get("studentId"));
                     intent.putExtra("subjectCode", remoteMessage.getData().get("subjectCode"));

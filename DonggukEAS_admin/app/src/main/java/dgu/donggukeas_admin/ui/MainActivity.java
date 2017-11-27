@@ -27,7 +27,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,7 +50,7 @@ import dgu.donggukeas_admin.util.Utils;
 
 
 public class MainActivity extends AppCompatActivity implements QRCodeReaderView.OnQRCodeReadListener {
-    private RecyclerView mRegisterRecyclerView;
+    private RecyclerView mAttendanceView;
     private AttendanceAdapter mAdapter;
     private FirebaseDatabase mDatabase;
     private DatabaseReference mReference;
@@ -66,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
     private ArrayList<RunAwayStudent> mSuspects;
     private WifiManager mWifiManager;
     private List<ScanResult> mWifiResults;
+
+
     private int mWeeks;
     private String mLastCheckedStudent;
     private Toast mToast;
@@ -95,15 +96,15 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
         mRunawayStudentRef = mDatabase.getReference(getString(R.string.table_runaway_student));
 
 
-        mRegisterRecyclerView = (RecyclerView) findViewById(R.id.rv_register);
-        mRegisterRecyclerView.setHasFixedSize(true);
-        mRegisterRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mAttendanceView = (RecyclerView) findViewById(R.id.rv_register);
+        mAttendanceView.setHasFixedSize(true);
+        mAttendanceView.setLayoutManager(new LinearLayoutManager(this));
         pointsOverlayView = (PointsOverlayView) findViewById(R.id.points_overlay_view);
 
         mStudents = new ArrayList<>();
         mSuspects = new ArrayList<>();
         mAdapter = new AttendanceAdapter(this, mStudents);
-        mRegisterRecyclerView.setAdapter(mAdapter);
+        mAttendanceView.setAdapter(mAdapter);
 
         mWifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
 
@@ -418,7 +419,7 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
     }
 
     public boolean isExistWifi(String BSSID) {
-        for (int i = 0; i < mWifiResults.size(); ++i) {
+        for (int i = 0; i < mWifiResults.size() && i<20; ++i) {
             if (BSSID.equals(mWifiResults.get(i).BSSID)) {
                 return true;
             }
@@ -490,6 +491,7 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
             if (index != Constants.studentNotFound) {
                 mStudents.get(index).setAttendanceStatus(as.getAttendanceStatus());
                 mAdapter.notifyItemChanged(index);
+
             }
             //Log.d("#####","attendance:"+dataSnapshot.getKey());
         }
@@ -499,8 +501,11 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
             AttendanceStatus as = dataSnapshot.getValue(AttendanceStatus.class);
             int index = getStudentIndex(as.getStudentId());
             if (index != Constants.studentNotFound) {
+                mAttendanceView.smoothScrollToPosition(index);
                 mStudents.get(index).setAttendanceStatus(as.getAttendanceStatus());
                 mAdapter.notifyItemChanged(index);
+
+
             }
         }
 
@@ -765,6 +770,7 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
 
             mWifiResults = mWifiManager.getScanResults();
             final int N = mWifiResults.size();
+
             Log.d("#####","wifi load ended!!!");
 /*            Log.v("#####", "Wi-Fi Scan Results ... Count:" + N);
             for (int i = 0; i < N; ++i) {
