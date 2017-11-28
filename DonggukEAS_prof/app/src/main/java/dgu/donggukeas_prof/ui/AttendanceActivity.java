@@ -108,7 +108,6 @@ public class AttendanceActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 final String mSubjectCode = subjectCode.getText().toString();
-                mIsProgress = true;
 
                 FirebaseDatabase mDatabase;
                 mDatabase = FirebaseDatabase.getInstance();
@@ -119,6 +118,7 @@ public class AttendanceActivity extends AppCompatActivity {
                         RunawayActive ra = snapshot.getValue(RunawayActive.class);
                         //출튀 기능은 리더기에서 현재 강의의 출석 체크가 종료되었을 때 수행 가능
                         if(ra.getIsActive() == Constants.SUBJECT_ATTENDANCE_END) {
+                            mIsProgress = true;
                             //Toast.makeText(getApplicationContext(), "출석완료", Toast.LENGTH_LONG).show();
                             RunawayActive mRunawayActive = new RunawayActive(Constants.SUBJECT_ATTENDANCE_RUNAWAY_ACTIVE); //리더기에게 출튀 관련 액션을 요청
 
