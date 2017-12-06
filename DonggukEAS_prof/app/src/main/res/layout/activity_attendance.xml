@@ -25,6 +25,7 @@
 
 
     </android.support.v7.widget.Toolbar>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -330,27 +331,11 @@
             android:id="@+id/ll_pb"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/black_semi_transparent70"
+            android:background="@color/blueGrey900"
             android:gravity="center"
             android:orientation="vertical"
             android:visibility="invisible"
             android:weightSum="1">
-
-
-            <ImageView
-                android:id="@+id/iv_gps"
-                android:layout_width="match_parent"
-                android:layout_height="108dp"
-                android:layout_marginBottom="25dp"
-                app:srcCompat="@drawable/ic_gps" />
-
-
-            <ProgressBar
-                android:id="@+id/pb_wifiprogress"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginBottom="30dp" />
-
             <TextView
                 android:id="@+id/tv_progress"
                 android:layout_width="match_parent"
@@ -361,6 +346,23 @@
                 android:textColor="@color/Grey50"
                 android:textSize="16sp"
                 android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/iv_gps"
+                android:layout_width="match_parent"
+                android:layout_height="108dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="15dp"
+                app:srcCompat="@drawable/ic_gps" />
+
+
+            <ProgressBar
+                android:id="@+id/pb_wifiprogress"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginBottom="30dp" />
+
+
         </LinearLayout>
     </FrameLayout>
 </LinearLayout>

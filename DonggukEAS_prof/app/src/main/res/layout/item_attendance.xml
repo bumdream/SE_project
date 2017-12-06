@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
         android:padding="10dp"
-        android:src="@drawable/ic_man"/>
+        android:src="@drawable/ic_user_profile"/>
 
     <LinearLayout
         android:id="@+id/ll_infobg"
