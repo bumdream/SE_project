@@ -44,8 +44,7 @@ public class csAdapter extends RecyclerView.Adapter<csAdapter.csViewHolder>{
     }
     @Override
     public void onBindViewHolder(csViewHolder holder, final int position) {
-        csModel cs = list.get(position);
-
+        csModel cs = list.get(position);//뷰에서
         holder.deviceTOKEN.setText(cs.deviceToken);
         holder.studentID.setText(cs.studentId);
     }

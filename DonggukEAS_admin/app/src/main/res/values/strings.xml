@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DonggukEAS_admin</string>
+    <string name="app_name">QR리더기</string>
     <string name="accept">승인</string>
     <string name="reserve_list">기기승인요청</string>
     <string name="decode">QR코드를 비춰주세요</string>
