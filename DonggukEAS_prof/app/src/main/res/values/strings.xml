@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DonggukEAS_professor</string>
+    <string name="app_name">튀어봐야 손바닥(교수)</string>
     <string name="register">휴대폰 등록요청</string>
     <string name="id_hint">professorID</string>
     <string name="not_register">등록된 기기가 아닙니다.</string>
