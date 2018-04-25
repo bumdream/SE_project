@@ -56,7 +56,6 @@ When a professor goes into a class and reads his QR code on the reader, the QR r
 ## Attendance Check
 
 <p align="center">
-    <img src="doc/stu_attendance_1.png", width="500">
     <img src="doc/stu_attendance.gif", width="200">
 </p>
 
@@ -64,6 +63,10 @@ When a professor goes into a class and reads his QR code on the reader, the QR r
 </br>
 
 We use the **Wifi strength information** to determine that the student is in the classroom because it is drastically decreased in the strength after passing through a wall. On the other hand, GPS has a lot of errors inside the building. So we did not use GPS.
+
+<p align="center">
+    <img src="doc/stu_attendance_1.png", width="500">
+</p>
 
 </br></br>
 When a student show the QR code to the QR reader, the reader gets student id from QR code and asks for wifi information on the student's registered device. **This method is designed to prevent the QR code from being displayed through a screen shot from other's phone.**
