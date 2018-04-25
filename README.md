@@ -43,7 +43,7 @@ Even if students login with the app, they can not create QR codes unless they ob
 
 <p align="center">
     <img src="doc/prof_init_reader.png", width="500">
-    <img src="doc/prof_init_reader.gif", width="300">
+    <img src="doc/prof_init_reader.gif", width="200">
 </p>
 
 Our assumptions are as follows.
@@ -57,8 +57,9 @@ When a professor goes into a class and reads his QR code on the reader, the QR r
 
 <p align="center">
     <img src="doc/stu_attendance_1.png", width="500">
-    <img src="doc/stu_attendance_1.gif", width="300">
+    <img src="doc/stu_attendance.gif", width="200">
 </p>
+
 
 </br>
 
@@ -70,7 +71,6 @@ The student phone updates on firebase the strongest wifi signal's mac address cu
 
 <p align="center">
     <img src="doc/stu_attendance_2.png", width="500">
-    <img src="doc/stu_attendance_2.gif", width="300">
 </p>
 
 If the wifi checked is a valid wifi, change the value of the attendanceStatus to "OK"</br>
