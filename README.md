@@ -1,7 +1,7 @@
 # Mobile-QR-Attendance-System
 This project is team project in the subject "Software Engineering Design" at Dongguk University.
 
-## Members 
+## Members
 - 한승범(Han Seung Beom) <aronix23@gmail.com>
 - 배종후(Bae Jong Hoo) <qowhdgn@naver.com>
 - 한재현(Han Jae Hyun) <restrain22@naver.com>
